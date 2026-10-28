@@ -1,58 +1,56 @@
 # CostoStock
 
-Aplicación móvil Android (Kotlin + Jetpack Compose + Material 3) para **gestionar compras de insumos con control de costos y stock**. Permite registrarse, iniciar sesión, explorar un catálogo, armar un carrito y confirmar la compra descontando stock.
+# 🛒 CostoStock Proveedores
 
-> Evaluación Parcial 2 – DSY1105 Desarrollo de Aplicaciones Móviles (Duoc UC)
+App Android para que los **proveedores** publiquen y administren los artículos que venden en **CostoStock**.
+Es la contraparte de la app de clientes: el proveedor sube sus artículos y el cliente los compra.
+Proyecto de la asignatura **DSY1105 – Desarrollo de Aplicaciones Móviles** (Duoc UC).
 
-## Integrantes
-- _Nombre Apellido 1_
-- _Nombre Apellido 2_
+## 👥 Integrantes
+- Nicolas Rojas
+- Benjamin Perez
 
-**Equipo N°:** _X_ · **Planificación:** _enlace al tablero de Trello_
+**Equipo N°:** 4
 
-## Funcionalidades
-- **Registro** con validación por campo (nombre, correo, contraseña, confirmación, términos), medidor de seguridad de la contraseña y detección de correo duplicado.
-- **Inicio de sesión** con validación, mensajes de error visuales y sesión persistente (al reabrir la app se entra directo al catálogo).
-- **Catálogo** (identidad CostoStock, distribución inspirada en Mercado Libre): encabezado con logo, comuna y buscador; carrusel de destacados; accesos rápidos; filtros por categoría y comuna; orden por precio; grilla de productos con precio (IVA incluido), comuna y stock; ficha de detalle del producto.
-- **Carrito** con cantidades limitadas por stock, eliminación, vaciado con confirmación, desglose Neto / IVA 19% incluido / Total y **confirmación de compra** transaccional (descuenta stock y vacía el carrito).
-- **Perfil** con foto tomada con la cámara y cierre de sesión.
-- **Animaciones:** transiciones de navegación, cambio animado de botón/cantidad, total animado, "shake" del formulario ante error, barra de seguridad de contraseña, estado vacío y diálogo de éxito.
+## ✅ Funcionalidades
+- **Registro** de proveedor (nombre del comercio, RUT con dígito verificador, teléfono celular, correo, contraseña con medidor de seguridad y términos).
+- **Inicio de sesión** con sesión persistente y cierre de sesión.
+- **Mis publicaciones** (inspirado en Mercado Libre): resumen de ventas (activas, pausadas, unidades y valor del inventario), búsqueda, filtros por estado, y acciones para editar, pausar/activar y eliminar.
+- **Publicar un artículo** en un asistente de 4 pasos con validación en cada uno:
+  1. *Producto*: título, categoría, condición (nuevo/usado) y descripción.
+  2. *Fotos*: hasta 3 con la cámara; la primera es la portada.
+  3. *Precio*: precio con IVA incluido (con desglose neto + IVA), unidades y comuna.
+  4. *Revisar*: vista previa de la publicación antes de publicar.
+- **Perfil**: foto con la cámara, datos de contacto, estadísticas y edición de datos.
+- **Persistencia local** con SQLite (`SQLiteOpenHelper` + DAOs), igual que la app de clientes.
+- **Recursos nativos**: cámara (con permiso en tiempo de ejecución) y vibración (feedback háptico).
+- **Animaciones**: transiciones de pantalla y de pasos, progreso del asistente, sacudida ante errores, mensajes de error animados, contadores del resumen, cambio de color de estados, ítems de la lista y confirmación con rebote.
 
-## Recursos nativos
-1. **Cámara** (foto de perfil) con solicitud de permiso `CAMERA` en tiempo de ejecución y manejo de rechazo / dispositivo sin cámara. La foto se guarda en el almacenamiento interno privado.
-2. **Vibración** (feedback háptico) al agregar productos, en errores de formulario y al confirmar la compra.
+## 🧱 Arquitectura
+MVVM con repositorios, inyección de dependencias manual y la misma estructura que la app de clientes.
 
-## Arquitectura (MVVM)
 ```
-cl.costoStock.myapplication
-├── data
-│   ├── local        # SQLiteOpenHelper + DAOs (usuarios, productos, carrito)
-│   ├── model        # User, Product, CartLine
-│   ├── repository   # AuthRepository, ProductRepository, CartRepository
-│   ├── session      # SessionManager (sesión activa)
-│   └── storage      # PhotoStorage (fotos de perfil)
-├── domain
-│   ├── validation   # Validators (lógica pura, sin UI)
-│   └── cart         # CartCalculator (neto / IVA / total)
-├── security         # PasswordHasher (PBKDF2 + sal)
-├── nativeapi        # Haptics (vibración)
-└── ui
-    ├── auth · home · cart · profile   # Screen + ViewModel por módulo
-    ├── components   # Campos, stepper, banners reutilizables
-    ├── navigation   # Rutas
-    └── theme        # Tema Material 3
+data/      local (SQLite + DAOs) · model · repository · session · storage
+domain/    validation (Validators) · pricing (IVA) · catalog (categorías y comunas)
+security/  PasswordHasher (PBKDF2 + salt)
+nativeapi/ Haptics · CameraAction
+ui/        auth · products · publish · profile · components · navigation · theme
 ```
-- La **validación vive en `Validators`** y los `ViewModel` exponen el estado (`StateFlow`); las pantallas solo lo dibujan.
-- La **persistencia es SQLite**; los `Flow` de los repositorios se vuelven a emitir cuando cambia la base, así la UI se mantiene sincronizada.
-- Las contraseñas **nunca se guardan en texto plano**: se almacena hash PBKDF2 con sal aleatoria por usuario.
 
-## Cómo ejecutar
-1. Abrir la carpeta del proyecto en **Android Studio** y esperar la sincronización de Gradle.
-2. Elegir un emulador (API 24+) o un dispositivo físico.
-3. Presionar **Run ▶**.
-4. Crear una cuenta desde "Regístrate" e ingresar. Para probar la cámara se recomienda un dispositivo físico o un emulador con cámara virtual.
+- La **validación** vive en `domain/validation` (Kotlin puro, sin Android ni Compose) y se prueba con tests.
+- Las contraseñas se guardan con **hash PBKDF2 + salt**; el login no revela si el correo existe.
+- Las fotos se toman en la caché y se copian al almacenamiento privado al confirmar.
 
-Tests unitarios: `./gradlew test`
+## 🔗 Integración con la app de clientes
+La tabla `products` incluye las mismas columnas que la del cliente más algunas propias del proveedor.
+Ver [`docs/contrato-datos.md`](docs/contrato-datos.md).
 
-## Convención de commits
+## ▶️ Cómo ejecutar
+1. Abrir el proyecto con **Android Studio** y esperar el *Gradle Sync*.
+2. Ejecutar en un emulador o dispositivo (API 24+). Para la cámara, usar un emulador con cámara virtual o un teléfono real.
+3. Crear una cuenta (RUT de prueba válido: `12.345.678-5`) y publicar un artículo.
+4. Tests: `./gradlew test`.
+
+## 🧪 Tests
+Validaciones (RUT, teléfono, contraseña, título, precio, stock, fotos…), cálculo de IVA y hash de contraseñas.
 `feat:`, `fix:`, `refactor:`, `test:`, `docs:` seguido de una descripción técnica (ej. `feat(auth): validar correo duplicado en registro`).
