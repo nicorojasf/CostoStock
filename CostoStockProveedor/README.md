@@ -5,8 +5,8 @@ Es la contraparte de la app de clientes: el proveedor sube sus artículos y el c
 Proyecto de la asignatura **DSY1105 – Desarrollo de Aplicaciones Móviles** (Duoc UC).
 
 ## 👥 Integrantes
-- _Nombre Apellido_ — App de Proveedores
-- _Nombre Apellido_ — App de Clientes
+- _Benjamin Perez_ — App de Proveedores
+- _Nicolas Rojas_ — App de Clientes
 
 ## ✅ Funcionalidades
 - **Registro** de proveedor (nombre del comercio, RUT con dígito verificador, teléfono celular, correo, contraseña con medidor de seguridad y términos).
