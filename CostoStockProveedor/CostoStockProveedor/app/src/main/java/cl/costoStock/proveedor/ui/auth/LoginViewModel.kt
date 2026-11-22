@@ -28,6 +28,10 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
     private val _state = MutableStateFlow(LoginUiState())
     val state: StateFlow<LoginUiState> = _state.asStateFlow()
 
+    // Límite básico de intentos: tras MAX_ATTEMPTS errores seguidos se bloquea el botón un rato.
+    private var failedAttempts = 0
+    private var lockedUntil = 0L
+
     fun onEmailChange(value: String) = _state.update {
         it.copy(
             email = value,
@@ -69,18 +73,45 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
             return
         }
 
+        val now = System.currentTimeMillis()
+        if (now < lockedUntil) {
+            val seconds = (lockedUntil - now) / 1000 + 1
+            _state.update {
+                it.copy(
+                    formError = "Demasiados intentos. Espera $seconds s e inténtalo de nuevo",
+                    shakeCount = it.shakeCount + 1
+                )
+            }
+            return
+        }
+
         _state.update { it.copy(isLoading = true, formError = null) }
         viewModelScope.launch {
             when (authRepository.login(current.email, current.password)) {
-                AuthResult.Success -> _state.update { it.copy(isLoading = false, loggedIn = true) }
-                else -> _state.update {
-                    it.copy(
-                        isLoading = false,
-                        formError = "Correo o contraseña incorrectos",
-                        shakeCount = it.shakeCount + 1
-                    )
+                AuthResult.Success -> {
+                    failedAttempts = 0
+                    _state.update { it.copy(isLoading = false, loggedIn = true) }
+                }
+                else -> {
+                    failedAttempts++
+                    if (failedAttempts >= MAX_ATTEMPTS) {
+                        failedAttempts = 0
+                        lockedUntil = System.currentTimeMillis() + LOCK_MILLIS
+                    }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            formError = "Correo o contraseña incorrectos",
+                            shakeCount = it.shakeCount + 1
+                        )
+                    }
                 }
             }
         }
+    }
+
+    private companion object {
+        const val MAX_ATTEMPTS = 5
+        const val LOCK_MILLIS = 30_000L
     }
 }

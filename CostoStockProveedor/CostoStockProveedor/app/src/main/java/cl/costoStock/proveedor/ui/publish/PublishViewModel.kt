@@ -139,8 +139,10 @@ class PublishViewModel(private val productRepository: ProductRepository) : ViewM
         _state.update { it.copy(photos = it.photos + path, photosError = null, formError = null) }
     }
 
-    fun removePhoto(index: Int) = _state.update {
-        if (index !in it.photos.indices) it else it.copy(photos = it.photos.filterIndexed { i, _ -> i != index })
+    fun removePhoto(index: Int) {
+        val path = _state.value.photos.getOrNull(index) ?: return
+        deleteIfTemporary(path)
+        _state.update { it.copy(photos = it.photos.filterIndexed { i, _ -> i != index }) }
     }
 
     fun makeCover(index: Int) = _state.update {
@@ -193,6 +195,17 @@ class PublishViewModel(private val productRepository: ProductRepository) : ViewM
     }
 
     // ------------------------------ Internos ------------------------------
+
+    /** Las fotos recién tomadas viven en la caché (carpeta "captures"); las guardadas no se tocan. */
+    private fun deleteIfTemporary(path: String) {
+        val file = File(path)
+        if (file.parentFile?.name == "captures") file.delete()
+    }
+
+    /** Si se sale del asistente sin publicar, se limpian las fotos temporales que quedaron. */
+    override fun onCleared() {
+        if (!_state.value.completed) _state.value.photos.forEach { deleteIfTemporary(it) }
+    }
 
     private fun validateStep(step: Int): Boolean {
         val s = _state.value

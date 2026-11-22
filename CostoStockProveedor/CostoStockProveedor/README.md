@@ -5,8 +5,8 @@ Es la contraparte de la app de clientes: el proveedor sube sus artículos y el c
 Proyecto de la asignatura **DSY1105 – Desarrollo de Aplicaciones Móviles** (Duoc UC).
 
 ## 👥 Integrantes
-- _Nombre Apellido_ — App de Proveedores
-- _Nombre Apellido_ — App de Clientes
+- _Benjamin Perez_ — App de Proveedores
+- _Nicolas Rojas_ — App de Clientes
 
 ## ✅ Funcionalidades
 - **Registro** de proveedor (nombre del comercio, RUT con dígito verificador, teléfono celular, correo, contraseña con medidor de seguridad y términos).
@@ -28,14 +28,14 @@ MVVM con repositorios, inyección de dependencias manual y la misma estructura q
 ```
 data/      local (SQLite + DAOs) · model · repository · session · storage
 domain/    validation (Validators) · pricing (IVA) · catalog (categorías y comunas)
-security/  PasswordHasher (PBKDF2 + salt)
+security/  PasswordHasher (PBKDF2-SHA256 + salt)
 nativeapi/ Haptics · CameraAction
 ui/        auth · products · publish · profile · components · navigation · theme
 ```
 
 - La **validación** vive en `domain/validation` (Kotlin puro, sin Android ni Compose) y se prueba con tests.
-- Las contraseñas se guardan con **hash PBKDF2 + salt**; el login no revela si el correo existe.
-- Las fotos se toman en la caché y se copian al almacenamiento privado al confirmar.
+- Las contraseñas se guardan con **hash PBKDF2-HMAC-SHA256 + salt** (las cuentas hechas con el esquema antiguo SHA-1 siguen funcionando); el login no revela si el correo existe y limita los intentos fallidos seguidos.
+- Las fotos se toman en la caché y se copian al almacenamiento privado al confirmar; si el usuario quita una foto o abandona el asistente, la copia temporal se borra.
 
 ## 🔗 Integración con la app de clientes
 La tabla `products` incluye las mismas columnas que la del cliente más algunas propias del proveedor.
@@ -43,7 +43,7 @@ Ver [`docs/contrato-datos.md`](docs/contrato-datos.md).
 
 ## ▶️ Cómo ejecutar
 1. Abrir el proyecto con **Android Studio** y esperar el *Gradle Sync*.
-2. Ejecutar en un emulador o dispositivo (API 24+). Para la cámara, usar un emulador con cámara virtual o un teléfono real.
+2. Ejecutar en un emulador o dispositivo (API 26+). Para la cámara, usar un emulador con cámara virtual o un teléfono real.
 3. Crear una cuenta (RUT de prueba válido: `12.345.678-5`) y publicar un artículo.
 4. Tests: `./gradlew test`.
 

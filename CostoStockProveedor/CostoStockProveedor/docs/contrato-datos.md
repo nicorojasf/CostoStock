@@ -4,6 +4,15 @@ Ambas apps usan **SQLite** y modelan los artículos en una tabla `products`.
 Por ahora cada app tiene su propia base en el dispositivo; este documento define cómo se unirán
 cuando compartan la base de datos (o un backend).
 
+> **Importante:** cada app Android corre aislada y su SQLite vive en un espacio privado, así que dos
+> apps **no pueden abrir el mismo archivo `.db`**. Para que lo que publica el proveedor llegue al
+> cliente hay que pasar por un backend. Opciones, de más a menos recomendada:
+> 1. **Backend** (API REST o Firebase) como fuente única de `products`; cada app lo consume y puede
+>    mantener SQLite solo como caché local.
+> 2. **ContentProvider** exportado por una de las apps (con permiso de firma): funciona solo si ambas
+>    están instaladas en el mismo teléfono.
+> 3. **Para la demo:** precargar los mismos datos en ambas bases.
+
 ## Tabla `products`
 
 | Columna | Tipo | Cliente (`costostock.db`) | Proveedor (`costostock_proveedor.db`) | Notas |
