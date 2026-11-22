@@ -67,7 +67,7 @@ data/
 domain/
 ├── validation   # Validators (reglas de formularios, Kotlin puro)
 └── cart | pricing | catalog   # Cálculo de IVA y listas cerradas
-security/        # PasswordHasher (PBKDF2 + sal)
+security/        # PasswordHasher (PBKDF2-SHA256 + sal)
 nativeapi/       # Haptics y, en Proveedores, CameraAction
 ui/
 ├── auth · home · cart · profile · products · publish   # Screen + ViewModel por módulo
@@ -78,9 +78,27 @@ ui/
 
 - Las **validaciones viven en `Validators`**, sin dependencias de Android ni de la interfaz. Los `ViewModel` exponen el estado con `StateFlow` y las pantallas solo lo dibujan.
 - La **persistencia es SQLite**. Los repositorios ejecutan las consultas fuera del hilo principal y los `Flow` se vuelven a emitir cuando cambia la base, para que la interfaz se mantenga sincronizada.
-- Las **contraseñas nunca se guardan en texto plano**: se almacena un hash PBKDF2 con sal aleatoria por usuario.
+- Las **contraseñas nunca se guardan en texto plano**: se almacena un hash PBKDF2-HMAC-SHA256 (210.000 iteraciones) con sal aleatoria por usuario. El login limita los intentos fallidos seguidos (5 errores → espera de 30 s).
 - La **inyección de dependencias es manual** (contenedor en la clase `Application` y `AppViewModelProvider`).
 
 ## Tecnologías
 
 Kotlin · Jetpack Compose · Material 3 · Navigation Compose · ViewModel y StateFlow · SQLite
+
+## Requisitos
+
+- Android Studio con JDK 17 o superior y Android **API 26+** (Android 8.0) en emulador o teléfono.
+- Cada app es un proyecto Gradle independiente: abre `CostoStock/` o `CostoStockProveedor/CostoStockProveedor/` por separado.
+- Tests: `./gradlew test` dentro de cada proyecto.
+
+## Documentación
+
+- [`docs/panel-administracion.html`](docs/panel-administracion.html): maqueta estática del panel de administración (datos de ejemplo, no está conectada a las apps).
+- [`CostoStockProveedor/CostoStockProveedor/docs/contrato-datos.md`](CostoStockProveedor/CostoStockProveedor/docs/contrato-datos.md): tabla `products` compartida y cómo se conectarán las dos apps.
+
+## Limitaciones conocidas y próximos pasos
+
+- **Las dos apps aún no están conectadas.** Cada una usa su propia base SQLite dentro de su espacio privado de Android, y dos aplicaciones no pueden compartir ese archivo. Para conectarlas hace falta un backend (por ejemplo API REST o Firebase); ver el contrato de datos.
+- La app de cliente todavía no migra su tabla `products` (agregar `seller_id`, `status`, `image_paths`…) ni filtra por publicaciones activas con stock.
+- El paquete de la app de cliente conserva el nombre de plantilla `myapplication`.
+- Parte del código está duplicado entre las dos apps (`Validators`, `PasswordHasher`, tema, `Haptics`); a futuro podría ir en un módulo compartido.

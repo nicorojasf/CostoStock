@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CostoStock · Panel de administración</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23EB6A1D'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='900' text-anchor='middle' fill='white' font-family='sans-serif'%3ECS%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#FDF7F3;--card:#fff;--ink:#2B1200;--mut:#7A6A60;--pri:#EB6A1D;--pri-c:#FFE6D6;--line:#EFDCCF;--ok:#2E7D32;--bad:#C62828;--warn:#F9A825;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1A120D;--card:#261A13;--ink:#F6E9E0;--mut:#B9A79B;--pri-c:#4A2A14;--line:#3A2A20;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1A120D;--card:#261A13;--ink:#F6E9E0;--mut:#B9A79B;--pri-c:#4A2A14;--line:#3A2A20;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.4}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 40px}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}.logo{font-size:30px;font-weight:900;letter-spacing:-.5px;line-height:1}.logo b{color:var(--pri)}
+.slogan{font-size:10px;letter-spacing:2px;color:var(--mut)}
+.sub{color:var(--mut);font-size:14px}
+.badge{background:var(--pri-c);color:var(--pri);font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:3px}
+.seg button{border:0;background:none;color:var(--ink);padding:7px 14px;border-radius:99px;font-weight:600;cursor:pointer;transition:.2s}
+.seg button.on{background:var(--pri);color:#fff}
+select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:99px;padding:9px 14px;font-weight:600}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:14px}
+.two{grid-template-columns:repeat(auto-fit,minmax(310px,1fr));margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;animation:in .5s both}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.card h3{margin:0 0 12px;font-size:15px}
+.k-l{font-size:12px;color:var(--mut);font-weight:600}
+.k-v{font-size:26px;font-weight:800;margin:2px 0}
+.up{color:var(--ok)}.down{color:var(--bad)}.k-s{font-size:12px;font-weight:600}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--mut);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line)}
+td.n,th.n{text-align:right}
+.bar{display:grid;grid-template-columns:110px 1fr 80px;gap:8px;align-items:center;margin:7px 0;font-size:13px}
+.track{background:var(--pri-c);border-radius:99px;height:10px;overflow:hidden}
+.fill{background:var(--pri);height:100%;border-radius:99px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.alert{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.tip{font-size:12px;color:var(--mut);min-height:18px}
+.note{margin-top:20px;font-size:12px;color:var(--mut)}
+@media (max-width:520px){.bar{grid-template-columns:90px 1fr 70px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+const {useState,useEffect,useMemo}=React, h=React.createElement;
+
+/* ============ CAPA DE DATOS ============
+   Hoy genera datos de ejemplo. Cuando exista la base de datos / backend, reemplaza
+   el cuerpo de cada api.* por una llamada real (fetch) que devuelva la MISMA forma. */
+const CATS=["Moda","Hogar","Bebés y niños","Tecnología","Mascotas","Deportes"];
+const CAT_W=[.28,.22,.12,.2,.08,.1];
+const COMUNAS=["Providencia","Ñuñoa","Santiago","Las Condes","Maipú","La Florida","Puente Alto","Quilicura"];
+const COM_W=[.22,.18,.16,.15,.11,.09,.05,.04];
+let seed=42;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+const DAYS=Array.from({length:180},(_,i)=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(179-i));
+  const g=1+i/180*.6,wk=[1.1,.8,.85,.9,1,1.3,1.4][d.getDay()],o=Math.round((14+rnd()*10)*g*wk);
+  return {date:d,orders:o,units:Math.round(o*(1.6+rnd()*.5)),sales:Math.round(o*(18000+rnd()*9000)),clients:Math.round(2+rnd()*5),sellers:Math.round(rnd()*2)}});
+const sum=(a,k)=>a.reduce((s,x)=>s+x[k],0);
+const pct=(a,b)=>b?Math.round((a-b)/b*1000)/10:0;
+const PRODUCTS=[["Chaqueta de mezclilla talla M","Moda","Usado",1],["Velador de madera nórdico","Hogar","Nuevo",1],["Coche de paseo plegable","Bebés y niños","Usado",1],["Notebook 14 pulgadas i5","Tecnología","Usado",1],["Cama para perro mediana","Mascotas","Nuevo",1],["Bicicleta aro 26","Deportes","Usado",1],["Audífonos inalámbricos","Tecnología","Nuevo",1],["Set de ollas de acero","Hogar","Nuevo",1]];
+const SELLERS=[["Ropa Vintage Ñuñoa","Ñuñoa"],["Casa Nórdica","Providencia"],["TecnoUsados SpA","Santiago"],["Mini Mundo","Las Condes"],["Deporte Reutil","Maipú"],["PetShop Barrio","La Florida"]];
+const api={
+  getKpis({days}){const c=DAYS.slice(-days),p=DAYS.slice(-2*days,-days),f=k=>sum(c,k),q=k=>sum(p,k);
+    return {sales:{v:f("sales"),d:pct(f("sales"),q("sales"))},orders:{v:f("orders"),d:pct(f("orders"),q("orders"))},
+      ticket:{v:f("sales")/f("orders"),d:pct(f("sales")/f("orders"),q("sales")/q("orders"))},units:{v:f("units"),d:pct(f("units"),q("units"))},
+      clients:{v:800+sum(DAYS,"clients"),sub:"+"+f("clients")+" nuevos"},sellers:{v:60+sum(DAYS,"sellers"),sub:"+"+f("sellers")+" nuevos"},
+      listings:{v:312,sub:"41 pausadas · 17 sin stock"}}},
+  getSalesByDay({days}){const c=DAYS.slice(-days);return {labels:c.map(x=>x.date),values:c.map(x=>x.sales)}},
+  getSignups({days}){const c=DAYS.slice(-days);return {labels:c.map(x=>x.date),clients:c.map(x=>x.clients),sellers:c.map(x=>x.sellers)}},
+  getSalesByCategory({days}){const t=sum(DAYS.slice(-days),"sales");return CATS.map((n,i)=>({label:n,value:t*CAT_W[i]}))},
+  getSalesByComuna({days}){const t=sum(DAYS.slice(-days),"sales");return COMUNAS.map((n,i)=>({label:n,value:t*COM_W[i]}))},
+  getConditionSplit(){return [{label:"Usados",value:64,color:"#EB6A1D"},{label:"Nuevos",value:36,color:"#2B1200"}]},
+  getTopProducts({days,category}){const k=days/30;return PRODUCTS.filter(p=>!category||p[1]===category).map((p,i)=>({name:p[0],category:p[1],condition:p[2],units:Math.round((90-i*9)*k),revenue:Math.round((90-i*9)*k*(14000+i*2300))}))},
+  getTopSellers({category}){return SELLERS.map((s,i)=>({name:s[0],comuna:s[1],listings:24-i*3,sales:Math.round(4200000-i*520000)}))},
+  getAlerts(){return [{tone:"var(--bad)",text:"17 publicaciones sin stock"},{tone:"var(--warn)",text:"23 publicaciones con 3 unidades o menos"},{tone:"var(--warn)",text:"31 publicaciones sin ventas hace más de 30 días"},{tone:"var(--pri)",text:"5 proveedores nuevos sin publicaciones"}]}
+};
+
+/* ============ UTILIDADES ============ */
+const nf=n=>Math.round(n).toLocaleString("es-CL"),clp=n=>"$"+nf(n);
+const dfmt=d=>d.toLocaleDateString("es-CL",{day:"numeric",month:"short"});
+function useCount(t){const[v,setV]=useState(0);useEffect(()=>{let s=null,id;const st=ts=>{s=s||ts;const p=Math.min((ts-s)/700,1);setV(t*(1-Math.pow(1-p,3)));if(p<1)id=requestAnimationFrame(st)};id=requestAnimationFrame(st);return()=>cancelAnimationFrame(id)},[t]);return v}
+
+/* ============ COMPONENTES ============ */
+function Kpi({label,value,fmt,delta,sub}){const v=useCount(value);
+  return h("div",{className:"card"},h("div",{className:"k-l"},label),h("div",{className:"k-v"},fmt(v)),
+    delta!==undefined?h("div",{className:"k-s "+(delta>=0?"up":"down")},(delta>=0?"▲ ":"▼ ")+Math.abs(delta)+"% vs período anterior"):h("div",{className:"k-s",style:{color:"var(--mut)"}},sub))}
+
+function LineChart({labels,series,fmt}){const[hi,setHi]=useState(null);const W=600,H=210,P=28;
+  const max=Math.max(...series.flatMap(s=>s.values))*1.1||1,n=labels.length;
+  const x=i=>P+(W-P*2)*i/Math.max(n-1,1),y=v=>H-P-(H-P*2)*v/max;
+  const pts=s=>s.values.map((v,i)=>x(i)+","+y(v)).join(" ");
+  const move=e=>{const r=e.currentTarget.getBoundingClientRect();setHi(Math.max(0,Math.min(n-1,Math.round((e.clientX-r.left)/r.width*W/(W-P*2)*(n-1)-P/(W-P*2)*(n-1)))))};
+  return h("div",null,
+    h("svg",{viewBox:"0 0 "+W+" "+H,width:"100%",onMouseMove:move,onMouseLeave:()=>setHi(null),style:{display:"block"}},
+      [0,.5,1].map(t=>h("line",{key:t,x1:P,x2:W-P,y1:y(max*t/1.1),y2:y(max*t/1.1),stroke:"var(--line)"})),
+      series.map(s=>h("g",{key:s.name},
+        series.length===1&&h("polygon",{points:x(0)+","+(H-P)+" "+pts(s)+" "+x(n-1)+","+(H-P),fill:s.color,opacity:.12}),
+        h("polyline",{points:pts(s),fill:"none",stroke:s.color,strokeWidth:2.5,strokeLinejoin:"round",pathLength:1,style:{strokeDasharray:1,strokeDashoffset:0,animation:"draw 1s ease-out"}}),
+        hi!==null&&h("circle",{cx:x(hi),cy:y(s.values[hi]),r:4.5,fill:s.color}))),
+      hi!==null&&h("line",{x1:x(hi),x2:x(hi),y1:P/2,y2:H-P,stroke:"var(--mut)",strokeDasharray:"3 3"}),
+      h("text",{x:P,y:H-8,fontSize:11,fill:"var(--mut)"},dfmt(labels[0])),
+      h("text",{x:W-P,y:H-8,fontSize:11,fill:"var(--mut)",textAnchor:"end"},dfmt(labels[n-1]))),
+    h("div",{className:"tip"},hi!==null?dfmt(labels[hi])+" · "+series.map(s=>s.name+": "+fmt(s.values[hi])).join(" · "):"Pasa el cursor sobre el gráfico"),
+    series.length>1&&h("div",{className:"legend"},series.map(s=>h("span",{key:s.name},h("i",{style:{background:s.color}}),s.name))))}
+
+function Bars({items}){const max=Math.max(...items.map(i=>i.value));const[go,setGo]=useState(false);useEffect(()=>{setGo(false);const t=setTimeout(()=>setGo(true),30);return()=>clearTimeout(t)},[items]);
+  return h("div",null,items.map(i=>h("div",{className:"bar",key:i.label},h("span",null,i.label),
+    h("div",{className:"track"},h("div",{className:"fill",style:{width:go?i.value/max*100+"%":"0%"}})),h("b",{style:{textAlign:"right"}},clp(i.value)))))}
+
+function Donut({items}){const total=sum(items,"value");let acc=0;
+  return h("div",{style:{display:"flex",alignItems:"center",gap:18,flexWrap:"wrap"}},
+    h("svg",{viewBox:"0 0 36 36",width:140,height:140,style:{transform:"rotate(-90deg)"}},
+      items.map(i=>{const len=i.value/total*100,el=h("circle",{key:i.label,cx:18,cy:18,r:15.9155,fill:"none",stroke:i.color,strokeWidth:5,strokeDasharray:len+" "+(100-len),strokeDashoffset:-acc,style:{transition:"stroke-dasharray .8s"}});acc+=len;return el})),
+    h("div",null,items.map(i=>h("div",{key:i.label,style:{margin:"6px 0"}},h("i",{style:{display:"inline-block",width:10,height:10,borderRadius:3,background:i.color,marginRight:8}}),h("b",null,i.value+"%")," "+i.label)),
+      h("div",{className:"sub",style:{marginTop:8,maxWidth:200}},"Cada artículo usado vendido es un producto que no se desecha.")))}
+
+function Table({cols,rows}){return h("div",{className:"scroll"},h("table",null,
+  h("thead",null,h("tr",null,cols.map(c=>h("th",{key:c.k,className:c.n?"n":""},c.t)))),
+  h("tbody",null,rows.map((r,i)=>h("tr",{key:i},cols.map(c=>h("td",{key:c.k,className:c.n?"n":""},c.f?c.f(r[c.k]):r[c.k])))))))}
+
+const Mark=({s=46})=>h("svg",{viewBox:"0 0 64 64",width:s,height:s,role:"img","aria-label":"Logo CostoStock"},h("rect",{width:64,height:64,rx:16,fill:"#EB6A1D"}),h("text",{x:32,y:43,fontSize:30,fontWeight:900,textAnchor:"middle",fill:"#fff",fontFamily:"system-ui,sans-serif"},"CS"));
+function Card({title,children}){return h("div",{className:"card"},h("h3",null,title),children)}
+
+function App(){
+  const[days,setDays]=useState(30),[category,setCategory]=useState("");
+  const d=useMemo(()=>{const o={days,category};return {k:api.getKpis(o),sales:api.getSalesByDay(o),su:api.getSignups(o),cat:api.getSalesByCategory(o),com:api.getSalesByComuna(o),cond:api.getConditionSplit(),tp:api.getTopProducts(o),ts:api.getTopSellers(o),al:api.getAlerts()}},[days,category]);
+  const k=d.k;
+  return h("div",{className:"wrap"},
+    h("div",{className:"top"},
+      h("div",{className:"brand"},h(Mark),h("div",null,h("div",{className:"logo"},"COSTO",h("b",null,"STOCK")),h("div",{className:"slogan"},"NADA SE PIERDE, TODOS GANAMOS"))),
+      h("div",{style:{textAlign:"right"}},h("div",{style:{fontWeight:700}},"Panel de administración"),h("span",{className:"badge"},"Datos de ejemplo"))),
+    h("div",{className:"filters"},
+      h("div",{className:"seg"},[7,30,90].map(n=>h("button",{key:n,className:n===days?"on":"",onClick:()=>setDays(n)},"Últimos "+n+" días"))),
+      h("select",{value:category,onChange:e=>setCategory(e.target.value),"aria-label":"Categoría"},h("option",{value:""},"Todas las categorías"),CATS.map(c=>h("option",{key:c},c)))),
+    h("div",{className:"grid kpis"},
+      h(Kpi,{label:"Ventas totales",value:k.sales.v,fmt:clp,delta:k.sales.d}),
+      h(Kpi,{label:"Órdenes",value:k.orders.v,fmt:nf,delta:k.orders.d}),
+      h(Kpi,{label:"Ticket promedio",value:k.ticket.v,fmt:clp,delta:k.ticket.d}),
+      h(Kpi,{label:"Unidades vendidas",value:k.units.v,fmt:nf,delta:k.units.d}),
+      h(Kpi,{label:"Clientes registrados",value:k.clients.v,fmt:nf,sub:k.clients.sub}),
+      h(Kpi,{label:"Proveedores",value:k.sellers.v,fmt:nf,sub:k.sellers.sub}),
+      h(Kpi,{label:"Publicaciones activas",value:k.listings.v,fmt:nf,sub:k.listings.sub})),
+    h("div",{className:"grid two"},
+      h(Card,{title:"Ventas por día"},h(LineChart,{labels:d.sales.labels,fmt:clp,series:[{name:"Ventas",values:d.sales.values,color:"#EB6A1D"}]})),
+      h(Card,{title:"Altas de usuarios por día"},h(LineChart,{labels:d.su.labels,fmt:nf,series:[{name:"Clientes",values:d.su.clients,color:"#EB6A1D"},{name:"Proveedores",values:d.su.sellers,color:"#2E7D32"}]}))),
+    h("div",{className:"grid two"},
+      h(Card,{title:"Ventas por categoría"},h(Bars,{items:d.cat})),
+      h(Card,{title:"Ventas por comuna"},h(Bars,{items:d.com}))),
+    h("div",{className:"grid two"},
+      h(Card,{title:"Economía circular: usados vs nuevos"},h(Donut,{items:d.cond})),
+      h(Card,{title:"Alertas del catálogo"},d.al.map(a=>h("div",{className:"alert",key:a.text},h("span",{className:"dot",style:{background:a.tone}}),a.text)))),
+    h("div",{className:"grid two"},
+      h(Card,{title:"Productos más vendidos"},h(Table,{cols:[{k:"name",t:"Producto"},{k:"condition",t:"Condición"},{k:"units",t:"Unid.",n:1,f:nf},{k:"revenue",t:"Ingresos",n:1,f:clp}],rows:d.tp})),
+      h(Card,{title:"Proveedores con más ventas"},h(Table,{cols:[{k:"name",t:"Proveedor"},{k:"comuna",t:"Comuna"},{k:"listings",t:"Publ.",n:1},{k:"sales",t:"Ventas",n:1,f:clp}],rows:d.ts}))),
+    h("div",{className:"note"},"Para conectar la base de datos, reemplaza el contenido de cada función de api.* (parte superior del script) por una llamada real que devuelva la misma forma de datos."))}
+const st=document.createElement("style");st.textContent="@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}";document.head.appendChild(st);
+ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+</script>
+</body>
+</html>
