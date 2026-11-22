@@ -4,3 +4,9 @@ build/
 .kotlin/
 local.properties
 *.iml
+.DS_Store
+
+# Crashes de la JVM / Gradle (no se suben al repositorio)
+hs_err_pid*.log
+replay_pid*.log
+*.hprof
