@@ -1,0 +1,681 @@
+{
+  "info": {
+    "name": "CostoStock - Microservicios (EFT)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Ejecuta primero los requests de login: guardan el token en las variables token_cliente, token_proveedor, token_soporte y token_admin."
+  },
+  "variable": [
+    {
+      "key": "usuarios",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "productos",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "pedidos",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "token_cliente",
+      "value": ""
+    },
+    {
+      "key": "token_cliente_id",
+      "value": "1"
+    },
+    {
+      "key": "token_proveedor",
+      "value": ""
+    },
+    {
+      "key": "token_proveedor_id",
+      "value": "1"
+    },
+    {
+      "key": "token_soporte",
+      "value": ""
+    },
+    {
+      "key": "token_admin",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Sesiones (4 roles)",
+      "item": [
+        {
+          "name": "Registrar cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes/registro",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Benjamín Pérez\",\n  \"email\": \"benja@mail.cl\",\n  \"password\": \"Clave1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const b = pm.response.json();",
+                  "if (b.token) pm.collectionVariables.set('token_cliente', b.token);",
+                  "if (b.id) pm.collectionVariables.set('token_cliente_id', b.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"benja@mail.cl\",\n  \"password\": \"Clave1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const b = pm.response.json();",
+                  "if (b.token) pm.collectionVariables.set('token_cliente', b.token);",
+                  "if (b.id) pm.collectionVariables.set('token_cliente_id', b.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar proveedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/proveedores/registro",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Tienda Nico\",\n  \"rut\": \"12345678-5\",\n  \"email\": \"nico@mail.cl\",\n  \"telefono\": \"+56912345678\",\n  \"password\": \"Clave1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const b = pm.response.json();",
+                  "if (b.token) pm.collectionVariables.set('token_proveedor', b.token);",
+                  "if (b.id) pm.collectionVariables.set('token_proveedor_id', b.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login proveedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/proveedores/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nico@mail.cl\",\n  \"password\": \"Clave1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const b = pm.response.json();",
+                  "if (b.token) pm.collectionVariables.set('token_proveedor', b.token);",
+                  "if (b.id) pm.collectionVariables.set('token_proveedor_id', b.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login soporte",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/equipo/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"soporte@costostock.cl\",\n  \"password\": \"Soporte1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const b = pm.response.json();",
+                  "if (b.token) pm.collectionVariables.set('token_soporte', b.token);",
+                  "if (b.id) pm.collectionVariables.set('token_soporte_id', b.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/equipo/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@costostock.cl\",\n  \"password\": \"Admin1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const b = pm.response.json();",
+                  "if (b.token) pm.collectionVariables.set('token_admin', b.token);",
+                  "if (b.id) pm.collectionVariables.set('token_admin_id', b.id);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. ms-usuarios",
+      "item": [
+        {
+          "name": "Listar clientes (soporte)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_soporte}}"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes"
+          }
+        },
+        {
+          "name": "Listar clientes como cliente → 403",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_cliente}}"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes"
+          }
+        },
+        {
+          "name": "Obtener mi cuenta",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_cliente}}"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes/{{token_cliente_id}}"
+          }
+        },
+        {
+          "name": "Editar mi nombre",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_cliente}}"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes/{{token_cliente_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Benja Pérez\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Editar proveedor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_proveedor}}"
+              }
+            ],
+            "url": "{{usuarios}}/api/proveedores/{{token_proveedor_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Tienda Nico Spa\",\n  \"telefono\": \"+56987654321\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar equipo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_soporte}}"
+              }
+            ],
+            "url": "{{usuarios}}/api/equipo"
+          }
+        },
+        {
+          "name": "Crear soporte (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": "{{usuarios}}/api/equipo",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Soporte Dos\",\n  \"email\": \"soporte2@costostock.cl\",\n  \"password\": \"Soporte1234\",\n  \"rol\": \"SOPORTE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar cliente (soporte) → 403",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_soporte}}"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes/{{token_cliente_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Recuperar contraseña",
+      "item": [
+        {
+          "name": "Solicitar código",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/recuperacion/solicitar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"benja@mail.cl\",\n  \"tipo\": \"CLIENTE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Restablecer (código de la consola de ms-usuarios)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/recuperacion/restablecer",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"benja@mail.cl\",\n  \"tipo\": \"CLIENTE\",\n  \"codigo\": \"123456\",\n  \"nuevaPassword\": \"Nueva1234\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. ms-productos",
+      "item": [
+        {
+          "name": "Catálogo (público)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos?soloDisponibles=true"
+          }
+        },
+        {
+          "name": "Publicaciones del proveedor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos?proveedorId={{token_proveedor_id}}"
+          }
+        },
+        {
+          "name": "Crear producto (proveedor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_proveedor}}"
+              }
+            ],
+            "url": "{{productos}}/api/productos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Lámpara de escritorio LED\",\n  \"categoria\": \"Hogar\",\n  \"descripcion\": \"3 niveles de luz, brazo flexible\",\n  \"precio\": 12990,\n  \"stock\": 5,\n  \"comuna\": \"Maipú\",\n  \"condicion\": \"NEW\",\n  \"imagenes\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Crear producto sin token → 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Lámpara\",\n  \"categoria\": \"Hogar\",\n  \"descripcion\": \"x\",\n  \"precio\": 1000,\n  \"stock\": 1,\n  \"comuna\": \"Maipú\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Editar producto (dueño)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_proveedor}}"
+              }
+            ],
+            "url": "{{productos}}/api/productos/15",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Lámpara LED Pro\",\n  \"categoria\": \"Hogar\",\n  \"descripcion\": \"3 niveles de luz\",\n  \"precio\": 14990,\n  \"stock\": 5,\n  \"comuna\": \"Maipú\",\n  \"condicion\": \"NEW\",\n  \"imagenes\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Pausar producto (soporte)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_soporte}}"
+              }
+            ],
+            "url": "{{productos}}/api/productos/15/estado",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"PAUSED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar producto (soporte) → 403",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_soporte}}"
+              }
+            ],
+            "url": "{{productos}}/api/productos/15"
+          }
+        },
+        {
+          "name": "Eliminar producto (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": "{{productos}}/api/productos/15"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. ms-pedidos",
+      "item": [
+        {
+          "name": "Crear pedido (cliente)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_cliente}}"
+              }
+            ],
+            "url": "{{pedidos}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": \"{{token_cliente_id}}\",\n  \"items\": [\n    {\n      \"productoId\": 1,\n      \"cantidad\": 2\n    },\n    {\n      \"productoId\": 4,\n      \"cantidad\": 1\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Mis pedidos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_cliente}}"
+              }
+            ],
+            "url": "{{pedidos}}/api/pedidos?clienteId={{token_cliente_id}}"
+          }
+        },
+        {
+          "name": "Todos los pedidos (soporte)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_soporte}}"
+              }
+            ],
+            "url": "{{pedidos}}/api/pedidos"
+          }
+        },
+        {
+          "name": "Cancelar pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_cliente}}"
+              }
+            ],
+            "url": "{{pedidos}}/api/pedidos/1/cancelar"
+          }
+        },
+        {
+          "name": "Eliminar pedido cancelado (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": "{{pedidos}}/api/pedidos/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. API externa",
+      "item": [
+        {
+          "name": "Indicadores mindicador.cl",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "https://mindicador.cl/api"
+          }
+        }
+      ]
+    }
+  ]
+}

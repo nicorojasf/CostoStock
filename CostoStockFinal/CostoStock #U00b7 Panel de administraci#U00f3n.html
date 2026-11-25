@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CostoStock · Panel de administración</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23EB6A1D'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='900' text-anchor='middle' fill='white' font-family='sans-serif'%3ECS%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#FDF7F3;--card:#fff;--ink:#2B1200;--mut:#7A6A60;--pri:#EB6A1D;--pri-c:#FFE6D6;--line:#EFDCCF;--ok:#2E7D32;--bad:#C62828;--warn:#F9A825;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1A120D;--card:#261A13;--ink:#F6E9E0;--mut:#B9A79B;--pri-c:#4A2A14;--line:#3A2A20;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1A120D;--card:#261A13;--ink:#F6E9E0;--mut:#B9A79B;--pri-c:#4A2A14;--line:#3A2A20;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.4}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 40px}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}.logo{font-size:30px;font-weight:900;letter-spacing:-.5px;line-height:1}.logo b{color:var(--pri)}
+.slogan{font-size:10px;letter-spacing:2px;color:var(--mut)}
+.sub{color:var(--mut);font-size:14px}
+.badge{background:var(--pri-c);color:var(--pri);font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:3px}
+.seg button{border:0;background:none;color:var(--ink);padding:7px 14px;border-radius:99px;font-weight:600;cursor:pointer;transition:.2s}
+.seg button.on{background:var(--pri);color:#fff}
+select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:99px;padding:9px 14px;font-weight:600}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:14px}
+.two{grid-template-columns:repeat(auto-fit,minmax(310px,1fr));margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;animation:in .5s both}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.card h3{margin:0 0 12px;font-size:15px}
+.k-l{font-size:12px;color:var(--mut);font-weight:600}
+.k-v{font-size:26px;font-weight:800;margin:2px 0}
+.up{color:var(--ok)}.down{color:var(--bad)}.k-s{font-size:12px;font-weight:600}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--mut);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line)}
+td.n,th.n{text-align:right}
+.bar{display:grid;grid-template-columns:110px 1fr 80px;gap:8px;align-items:center;margin:7px 0;font-size:13px}
+.track{background:var(--pri-c);border-radius:99px;height:10px;overflow:hidden}
+.fill{background:var(--pri);height:100%;border-radius:99px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.alert{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.tip{font-size:12px;color:var(--mut);min-height:18px}
+.note{margin-top:20px;font-size:12px;color:var(--mut)}
+@media (max-width:520px){.bar{grid-template-columns:90px 1fr 70px}}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 12px;font-weight:600;font-size:12px;cursor:pointer;transition:.15s}
+.btn:hover:not(:disabled){border-color:var(--pri)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 16px;border-radius:99px;font-weight:700;cursor:pointer}
+.tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;font-size:13px;font-weight:600}
+.field input,.field select{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:10px 12px;font-size:14px}
+.err{color:var(--bad);font-size:13px;margin:6px 0}
+.pill{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--pri-c);color:var(--pri);white-space:nowrap}
+.pill.off{background:#E8E2DE;color:#6B5C52}.pill.bad{background:#FDE2E2;color:var(--bad)}.pill.ok{background:#DFF2E1;color:var(--ok)}
+.actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;font-size:14px;box-shadow:0 8px 24px #0003;animation:in .3s both;z-index:9}
+.login{max-width:380px;margin:8vh auto 0}
+.roleinfo{font-size:12px;color:var(--mut);margin:-8px 0 14px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+const {useState,useEffect,useMemo,useCallback}=React, h=React.createElement;
+
+/* ============ CAPA DE DATOS: microservicios CostoStock ============
+   Lee en vivo de ms-usuarios (8081), ms-productos (8082) y ms-pedidos (8083) y calcula
+   las métricas en el navegador. Se actualiza sola cada 20 segundos.
+   Para usar otra máquina: abre el archivo con ?host=192.168.1.50 al final de la URL. */
+const HOST=new URLSearchParams(location.search).get("host")||"localhost";
+const URL_USUARIOS="http://"+HOST+":8081",URL_PRODUCTOS="http://"+HOST+":8082",URL_PEDIDOS="http://"+HOST+":8083";
+const SERVICES=[
+  {key:"equipo",name:"ms-usuarios (8081)",url:"http://"+HOST+":8081/api/equipo"},
+  {key:"clientes",name:"ms-usuarios (8081)",url:"http://"+HOST+":8081/api/clientes"},
+  {key:"proveedores",name:"ms-usuarios (8081)",url:"http://"+HOST+":8081/api/proveedores"},
+  {key:"productos",name:"ms-productos (8082)",url:"http://"+HOST+":8082/api/productos"},
+  {key:"pedidos",name:"ms-pedidos (8083)",url:"http://"+HOST+":8083/api/pedidos"}];
+const REFRESH_MS=20000,DAY=86400000;
+const sum=(a,k)=>a.reduce((s,x)=>s+x[k],0);
+const pct=(a,b)=>b?Math.round((a-b)/b*1000)/10:0;
+const startOfDay=t=>{const d=new Date(t);d.setHours(0,0,0,0);return d.getTime()};
+
+/* ---------- Roles del panel (mismos permisos que PerfilAcceso en el backend) ---------- */
+const PERMISOS={
+  SOPORTE:["VER_TODO","MODERAR_PUBLICACIONES","CANCELAR_PEDIDOS"],
+  ADMIN:["VER_TODO","MODERAR_PUBLICACIONES","CANCELAR_PEDIDOS","ELIMINAR_REGISTROS","GESTIONAR_EQUIPO"]};
+const puede=(session,permiso)=>!!session&&(PERMISOS[session.rol]||[]).includes(permiso);
+const ROL_TXT={ADMIN:"Administrador",SOPORTE:"Soporte"};
+const ROL_INFO={ADMIN:"Puedes ver todo, moderar, cancelar, eliminar registros y gestionar el equipo.",
+  SOPORTE:"Puedes ver todo, pausar/activar publicaciones y cancelar pedidos. No puedes eliminar registros."};
+
+const SESSION_KEY="costostock_panel_sesion";
+const loadSession=()=>{try{return JSON.parse(sessionStorage.getItem(SESSION_KEY))}catch(e){return null}};
+const saveSession=s=>{try{s?sessionStorage.setItem(SESSION_KEY,JSON.stringify(s)):sessionStorage.removeItem(SESSION_KEY)}catch(e){}};
+
+/** fetch con el token de la sesión. 401 → la sesión expiró; otros errores traen el mensaje del backend. */
+async function apiFetch(session,url,opts={}){
+  const headers={"Content-Type":"application/json"};
+  if(session)headers.Authorization="Bearer "+session.token;
+  const r=await fetch(url,Object.assign({cache:"no-store"},opts,{headers}));
+  if(r.status===401&&session){const e=new Error("Tu sesión expiró o no es válida. Inicia sesión nuevamente");e.auth=true;throw e}
+  if(!r.ok){let m="Error "+r.status;try{const b=await r.json();m=b.mensaje||m}catch(_){}throw new Error(m)}
+  return r.status===204?null:r.json();
+}
+
+async function login(email,password){
+  const s=await apiFetch(null,URL_USUARIOS+"/api/equipo/login",{method:"POST",body:JSON.stringify({email,password})});
+  return {token:s.token,rol:s.rol,nombre:s.nombre,email:s.email,id:s.id};
+}
+
+/** Acciones de gestión. El backend vuelve a validar el rol: el panel solo oculta lo que no corresponde. */
+const acciones={
+  estadoProducto:(s,p)=>apiFetch(s,URL_PRODUCTOS+"/api/productos/"+p.id+"/estado",{method:"PATCH",body:JSON.stringify({estado:p.estado==="ACTIVE"?"PAUSED":"ACTIVE"})}),
+  eliminarProducto:(s,p)=>apiFetch(s,URL_PRODUCTOS+"/api/productos/"+p.id,{method:"DELETE"}),
+  cancelarPedido:(s,o)=>apiFetch(s,URL_PEDIDOS+"/api/pedidos/"+o.id+"/cancelar",{method:"PATCH"}),
+  eliminarPedido:(s,o)=>apiFetch(s,URL_PEDIDOS+"/api/pedidos/"+o.id,{method:"DELETE"}),
+  eliminarCliente:(s,u)=>apiFetch(s,URL_USUARIOS+"/api/clientes/"+u.id,{method:"DELETE"}),
+  eliminarProveedor:(s,u)=>apiFetch(s,URL_USUARIOS+"/api/proveedores/"+u.id,{method:"DELETE"}),
+  crearEquipo:(s,datos)=>apiFetch(s,URL_USUARIOS+"/api/equipo",{method:"POST",body:JSON.stringify(datos)}),
+  eliminarEquipo:(s,u)=>apiFetch(s,URL_USUARIOS+"/api/equipo/"+u.id,{method:"DELETE"})
+};
+
+/** Descarga todo con el token. Si un microservicio no responde, el error dice cuál. */
+async function loadAll(session){
+  const res=await Promise.allSettled(SERVICES.map(s=>apiFetch(session,s.url)));
+  const auth=res.find(r=>r.status==="rejected"&&r.reason&&r.reason.auth);
+  if(auth)throw auth.reason;
+  const down=[...new Set(SERVICES.filter((s,i)=>res[i].status==="rejected").map(s=>s.name))];
+  if(down.length)throw new Error("No responde: "+down.join(", "));
+  const db={};SERVICES.forEach((s,i)=>db[s.key]=res[i].value);
+  db.byProduct=new Map(db.productos.map(p=>[p.id,p]));
+  db.bySeller=new Map(db.proveedores.map(p=>[p.id,p]));
+  db.key=JSON.stringify([db.equipo,db.clientes,db.proveedores,db.productos,db.pedidos]);
+  return db;
+}
+
+/** Líneas vendidas (pedidos confirmados) en el período; offset=1 es el período anterior. */
+function soldLines(db,{days,category},offset=0){
+  const to=Date.now()-offset*days*DAY,from=to-days*DAY,out=[];
+  db.pedidos.forEach(o=>{
+    if(o.estado!=="CONFIRMADO"||o.creadoEn<from||o.creadoEn>=to)return;
+    (o.items||[]).forEach(it=>{
+      const p=db.byProduct.get(it.productoId);
+      const cat=p?p.categoria:"Producto eliminado";
+      if(category&&cat!==category)return;
+      out.push({order:o,item:it,product:p,category:cat});
+    });
+  });
+  return out;
+}
+const groupSum=(lines,keyFn)=>{const m=new Map();lines.forEach(l=>{const k=keyFn(l);m.set(k,(m.get(k)||0)+l.item.subtotal)});
+  return [...m].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value)};
+const listingsOf=(db,category)=>db.productos.filter(p=>!category||p.categoria===category);
+
+const api={
+  getCategories(db){return [...new Set(db.productos.map(p=>p.categoria))].sort()},
+  getKpis(db,o){
+    const m=lines=>{const sales=lines.reduce((s,l)=>s+l.item.subtotal,0),orders=new Set(lines.map(l=>l.order.id)).size,
+      units=lines.reduce((s,l)=>s+l.item.cantidad,0);return {sales,orders,units,ticket:orders?sales/orders:0}};
+    const c=m(soldLines(db,o)),p=m(soldLines(db,o,1)),from=Date.now()-o.days*DAY;
+    const L=listingsOf(db,o.category),active=L.filter(x=>x.estado==="ACTIVE"&&x.stock>0).length;
+    // Sin datos en el período anterior no hay contra qué comparar (se muestra un texto en vez del %).
+    const cmp=(v,prev)=>prev?{v,d:pct(v,prev)}:{v,sub:"Sin datos del período anterior"};
+    return {sales:cmp(c.sales,p.sales),orders:cmp(c.orders,p.orders),ticket:cmp(c.ticket,p.ticket),units:cmp(c.units,p.units),
+      clients:{v:db.clientes.length,sub:"+"+db.clientes.filter(x=>x.creadoEn>=from).length+" nuevos"},
+      sellers:{v:db.proveedores.length,sub:"+"+db.proveedores.filter(x=>x.creadoEn>=from).length+" nuevos"},
+      listings:{v:active,sub:L.filter(x=>x.estado==="PAUSED").length+" pausadas · "+L.filter(x=>x.estado==="ACTIVE"&&x.stock===0).length+" sin stock"}}},
+  getSalesByDay(db,o){
+    const first=startOfDay(Date.now())-(o.days-1)*DAY,labels=[],values=Array(o.days).fill(0);
+    for(let i=0;i<o.days;i++)labels.push(new Date(first+i*DAY));
+    soldLines(db,o).forEach(l=>{const i=Math.floor((startOfDay(l.order.creadoEn)-first)/DAY);if(i>=0&&i<o.days)values[i]+=l.item.subtotal});
+    return {labels,values}},
+  getSignups(db,o){
+    const first=startOfDay(Date.now())-(o.days-1)*DAY,labels=[],clients=Array(o.days).fill(0),sellers=Array(o.days).fill(0);
+    for(let i=0;i<o.days;i++)labels.push(new Date(first+i*DAY));
+    const add=(list,arr)=>list.forEach(x=>{const i=Math.floor((startOfDay(x.creadoEn)-first)/DAY);if(i>=0&&i<o.days)arr[i]++});
+    add(db.clientes,clients);add(db.proveedores,sellers);
+    return {labels,clients,sellers}},
+  getSalesByCategory(db,o){return groupSum(soldLines(db,o),l=>l.category)},
+  getSalesByComuna(db,o){return groupSum(soldLines(db,o),l=>l.product?l.product.comuna:"Sin comuna")},
+  getConditionSplit(db,o){
+    // Unidades vendidas usadas vs nuevas; si aún no hay ventas, se usa el catálogo publicado.
+    const lines=soldLines(db,o);let used,total;
+    if(lines.length){used=lines.filter(l=>l.product&&l.product.condicion==="USED").reduce((s,l)=>s+l.item.cantidad,0);total=lines.reduce((s,l)=>s+l.item.cantidad,0)}
+    else{const L=listingsOf(db,o.category);used=L.filter(p=>p.condicion==="USED").length;total=L.length}
+    if(!total)return [];
+    const u=Math.round(used/total*100);
+    return [{label:"Usados",value:u,color:"#EB6A1D"},{label:"Nuevos",value:100-u,color:"#2B1200"}]},
+  getTopProducts(db,o){
+    const m=new Map();
+    soldLines(db,o).forEach(l=>{const id=l.item.productoId,r=m.get(id)||{name:l.item.nombreProducto,category:l.category,
+      condition:l.product?(l.product.condicion==="USED"?"Usado":"Nuevo"):"—",units:0,revenue:0};
+      r.units+=l.item.cantidad;r.revenue+=l.item.subtotal;m.set(id,r)});
+    return [...m.values()].sort((a,b)=>b.units-a.units||b.revenue-a.revenue).slice(0,8)},
+  getTopSellers(db,o){
+    const m=new Map(),row=id=>{if(!m.has(id)){const s=db.bySeller.get(id);m.set(id,{name:s?s.nombre:(id==null?"CostoStock (catálogo inicial)":"Proveedor #"+id),comunas:{},listings:0,sales:0})}return m.get(id)};
+    listingsOf(db,o.category).forEach(p=>{const r=row(p.proveedorId);r.listings++;r.comunas[p.comuna]=(r.comunas[p.comuna]||0)+1});
+    soldLines(db,o).forEach(l=>{if(l.product)row(l.product.proveedorId).sales+=l.item.subtotal});
+    return [...m.values()].map(r=>({name:r.name,listings:r.listings,sales:r.sales,
+      comuna:Object.entries(r.comunas).sort((a,b)=>b[1]-a[1]).map(e=>e[0])[0]||"—"}))
+      .sort((a,b)=>b.sales-a.sales||b.listings-a.listings).slice(0,6)},
+  getAlerts(db,o){
+    const L=listingsOf(db,o.category),active=L.filter(p=>p.estado==="ACTIVE"),month=Date.now()-30*DAY,out=[];
+    const sold=new Set();db.pedidos.forEach(x=>{if(x.estado==="CONFIRMADO"&&x.creadoEn>=month)(x.items||[]).forEach(i=>sold.add(i.productoId))});
+    const noStock=active.filter(p=>p.stock===0).length,low=active.filter(p=>p.stock>0&&p.stock<=3).length,
+      stale=active.filter(p=>p.creadoEn<month&&!sold.has(p.id)).length,paused=L.filter(p=>p.estado==="PAUSED").length,
+      cancelled=db.pedidos.filter(x=>x.estado==="CANCELADO"&&x.creadoEn>=Date.now()-o.days*DAY).length;
+    if(noStock)out.push({tone:"var(--bad)",text:noStock+" publicaciones sin stock"});
+    if(low)out.push({tone:"var(--warn)",text:low+" publicaciones con 3 unidades o menos"});
+    if(stale)out.push({tone:"var(--warn)",text:stale+" publicaciones sin ventas hace más de 30 días"});
+    if(paused)out.push({tone:"var(--mut)",text:paused+" publicaciones pausadas por su proveedor"});
+    if(cancelled)out.push({tone:"var(--mut)",text:cancelled+" pedidos cancelados en el período"});
+    if(!out.length)out.push({tone:"var(--ok)",text:"Todo en orden: sin alertas en el catálogo"});
+    return out}
+};
+
+/* ============ UTILIDADES ============ */
+const nf=n=>Math.round(n).toLocaleString("es-CL"),clp=n=>"$"+nf(n);
+const dfmt=d=>d.toLocaleDateString("es-CL",{day:"numeric",month:"short"});
+function useCount(t){const[v,setV]=useState(0);useEffect(()=>{let s=null,id;const st=ts=>{s=s||ts;const p=Math.min((ts-s)/700,1);setV(t*(1-Math.pow(1-p,3)));if(p<1)id=requestAnimationFrame(st)};id=requestAnimationFrame(st);return()=>cancelAnimationFrame(id)},[t]);return v}
+
+/* ============ COMPONENTES ============ */
+function Kpi({label,value,fmt,delta,sub}){const v=useCount(value);
+  return h("div",{className:"card"},h("div",{className:"k-l"},label),h("div",{className:"k-v"},fmt(v)),
+    delta!==undefined?h("div",{className:"k-s "+(delta>=0?"up":"down")},(delta>=0?"▲ ":"▼ ")+Math.abs(delta)+"% vs período anterior"):h("div",{className:"k-s",style:{color:"var(--mut)"}},sub))}
+
+function LineChart({labels,series,fmt}){const[hi,setHi]=useState(null);const W=600,H=210,P=28;
+  const max=Math.max(...series.flatMap(s=>s.values))*1.1||1,n=labels.length;
+  const x=i=>P+(W-P*2)*i/Math.max(n-1,1),y=v=>H-P-(H-P*2)*v/max;
+  const pts=s=>s.values.map((v,i)=>x(i)+","+y(v)).join(" ");
+  const move=e=>{const r=e.currentTarget.getBoundingClientRect();setHi(Math.max(0,Math.min(n-1,Math.round((e.clientX-r.left)/r.width*W/(W-P*2)*(n-1)-P/(W-P*2)*(n-1)))))};
+  return h("div",null,
+    h("svg",{viewBox:"0 0 "+W+" "+H,width:"100%",onMouseMove:move,onMouseLeave:()=>setHi(null),style:{display:"block"}},
+      [0,.5,1].map(t=>h("line",{key:t,x1:P,x2:W-P,y1:y(max*t/1.1),y2:y(max*t/1.1),stroke:"var(--line)"})),
+      series.map(s=>h("g",{key:s.name},
+        series.length===1&&h("polygon",{points:x(0)+","+(H-P)+" "+pts(s)+" "+x(n-1)+","+(H-P),fill:s.color,opacity:.12}),
+        h("polyline",{points:pts(s),fill:"none",stroke:s.color,strokeWidth:2.5,strokeLinejoin:"round",pathLength:1,style:{strokeDasharray:1,strokeDashoffset:0,animation:"draw 1s ease-out"}}),
+        hi!==null&&h("circle",{cx:x(hi),cy:y(s.values[hi]),r:4.5,fill:s.color}))),
+      hi!==null&&h("line",{x1:x(hi),x2:x(hi),y1:P/2,y2:H-P,stroke:"var(--mut)",strokeDasharray:"3 3"}),
+      h("text",{x:P,y:H-8,fontSize:11,fill:"var(--mut)"},dfmt(labels[0])),
+      h("text",{x:W-P,y:H-8,fontSize:11,fill:"var(--mut)",textAnchor:"end"},dfmt(labels[n-1]))),
+    h("div",{className:"tip"},hi!==null?dfmt(labels[hi])+" · "+series.map(s=>s.name+": "+fmt(s.values[hi])).join(" · "):"Pasa el cursor sobre el gráfico"),
+    series.length>1&&h("div",{className:"legend"},series.map(s=>h("span",{key:s.name},h("i",{style:{background:s.color}}),s.name))))}
+
+function Bars({items}){const max=Math.max(1,...items.map(i=>i.value));const[go,setGo]=useState(false);useEffect(()=>{setGo(false);const t=setTimeout(()=>setGo(true),30);return()=>clearTimeout(t)},[items]);
+  if(!items.length)return h(Empty,{text:"Aún no hay ventas en este período"});
+  return h("div",null,items.map(i=>h("div",{className:"bar",key:i.label},h("span",null,i.label),
+    h("div",{className:"track"},h("div",{className:"fill",style:{width:go?i.value/max*100+"%":"0%"}})),h("b",{style:{textAlign:"right"}},clp(i.value)))))}
+
+function Donut({items}){const total=sum(items,"value");let acc=0;if(!total)return h(Empty,{text:"Aún no hay publicaciones ni ventas"});
+  return h("div",{style:{display:"flex",alignItems:"center",gap:18,flexWrap:"wrap"}},
+    h("svg",{viewBox:"0 0 36 36",width:140,height:140,style:{transform:"rotate(-90deg)"}},
+      items.map(i=>{const len=i.value/total*100,el=h("circle",{key:i.label,cx:18,cy:18,r:15.9155,fill:"none",stroke:i.color,strokeWidth:5,strokeDasharray:len+" "+(100-len),strokeDashoffset:-acc,style:{transition:"stroke-dasharray .8s"}});acc+=len;return el})),
+    h("div",null,items.map(i=>h("div",{key:i.label,style:{margin:"6px 0"}},h("i",{style:{display:"inline-block",width:10,height:10,borderRadius:3,background:i.color,marginRight:8}}),h("b",null,i.value+"%")," "+i.label)),
+      h("div",{className:"sub",style:{marginTop:8,maxWidth:200}},"Cada artículo usado vendido es un producto que no se desecha.")))}
+
+function Table({cols,rows}){if(!rows.length)return h(Empty,{text:"Aún no hay datos en este período"});return h("div",{className:"scroll"},h("table",null,
+  h("thead",null,h("tr",null,cols.map(c=>h("th",{key:c.k,className:c.n?"n":""},c.t)))),
+  h("tbody",null,rows.map((r,i)=>h("tr",{key:i},cols.map(c=>h("td",{key:c.k,className:c.n?"n":""},c.f?c.f(r[c.k]):r[c.k])))))))}
+
+const Mark=({s=46})=>h("svg",{viewBox:"0 0 64 64",width:s,height:s,role:"img","aria-label":"Logo CostoStock"},h("rect",{width:64,height:64,rx:16,fill:"#EB6A1D"}),h("text",{x:32,y:43,fontSize:30,fontWeight:900,textAnchor:"middle",fill:"#fff",fontFamily:"system-ui,sans-serif"},"CS"));
+const Empty=({text})=>h("div",{className:"sub",style:{padding:"18px 0",textAlign:"center"}},text);
+function Card({title,children}){return h("div",{className:"card"},h("h3",null,title),children)}
+
+/* ============ PANTALLAS ============ */
+const fecha=ms=>new Date(ms).toLocaleString("es-CL",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+const Btn=({children,onClick,kind,disabled,title})=>h("button",{className:"btn"+(kind?" "+kind:""),onClick,disabled,title},children);
+
+function LoginView({onLogin,initialError}){
+  const[email,setEmail]=useState(""),[password,setPassword]=useState(""),[error,setError]=useState(initialError||null),[busy,setBusy]=useState(false);
+  const submit=e=>{e.preventDefault();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())){setError("Ingresa un correo válido");return}
+    if(!password){setError("Ingresa tu contraseña");return}
+    setBusy(true);setError(null);
+    login(email.trim(),password).then(onLogin).catch(err=>setError(err.message==="Failed to fetch"?"No responde ms-usuarios (8081). Levanta el backend e inténtalo de nuevo":err.message)).finally(()=>setBusy(false))};
+  return h("div",{className:"wrap"},h("div",{className:"card login"},
+    h("div",{className:"brand",style:{marginBottom:16}},h(Mark),h("div",null,h("div",{className:"logo"},"COSTO",h("b",null,"STOCK")),h("div",{className:"slogan"},"PANEL DE ADMINISTRACIÓN"))),
+    h("form",{onSubmit:submit},
+      h("label",{className:"field"},"Correo",h("input",{type:"email",value:email,onChange:e=>setEmail(e.target.value),autoComplete:"username"})),
+      h("label",{className:"field"},"Contraseña",h("input",{type:"password",value:password,onChange:e=>setPassword(e.target.value),autoComplete:"current-password"})),
+      error&&h("div",{className:"err"},"⚠ "+error),
+      h("button",{className:"btn pri",type:"submit",disabled:busy,style:{width:"100%",padding:"11px",fontSize:14}},busy?"Ingresando…":"Ingresar")),
+    h("div",{className:"sub",style:{marginTop:14,fontSize:12}},"Acceso solo para el equipo CostoStock (roles Administrador y Soporte).")))}
+
+function Dashboard({db}){
+  const[days,setDays]=useState(30),[category,setCategory]=useState("");
+  const d=useMemo(()=>{const o={days,category};return {cats:api.getCategories(db),k:api.getKpis(db,o),sales:api.getSalesByDay(db,o),su:api.getSignups(db,o),cat:api.getSalesByCategory(db,o),com:api.getSalesByComuna(db,o),cond:api.getConditionSplit(db,o),tp:api.getTopProducts(db,o),ts:api.getTopSellers(db,o),al:api.getAlerts(db,o)}},[db,days,category]);
+  const k=d.k;
+  return h("div",null,
+    h("div",{className:"filters"},
+      h("div",{className:"seg"},[7,30,90].map(n=>h("button",{key:n,className:n===days?"on":"",onClick:()=>setDays(n)},"Últimos "+n+" días"))),
+      h("select",{value:category,onChange:e=>setCategory(e.target.value),"aria-label":"Categoría"},h("option",{value:""},"Todas las categorías"),d.cats.map(c=>h("option",{key:c},c)))),
+    h("div",{className:"grid kpis"},
+      h(Kpi,{label:"Ventas totales",value:k.sales.v,fmt:clp,delta:k.sales.d,sub:k.sales.sub}),
+      h(Kpi,{label:"Órdenes",value:k.orders.v,fmt:nf,delta:k.orders.d,sub:k.orders.sub}),
+      h(Kpi,{label:"Ticket promedio",value:k.ticket.v,fmt:clp,delta:k.ticket.d,sub:k.ticket.sub}),
+      h(Kpi,{label:"Unidades vendidas",value:k.units.v,fmt:nf,delta:k.units.d,sub:k.units.sub}),
+      h(Kpi,{label:"Clientes registrados",value:k.clients.v,fmt:nf,sub:k.clients.sub}),
+      h(Kpi,{label:"Proveedores",value:k.sellers.v,fmt:nf,sub:k.sellers.sub}),
+      h(Kpi,{label:"Publicaciones activas",value:k.listings.v,fmt:nf,sub:k.listings.sub})),
+    h("div",{className:"grid two"},
+      h(Card,{title:"Ventas por día"},h(LineChart,{labels:d.sales.labels,fmt:clp,series:[{name:"Ventas",values:d.sales.values,color:"#EB6A1D"}]})),
+      h(Card,{title:"Altas de usuarios por día"},h(LineChart,{labels:d.su.labels,fmt:nf,series:[{name:"Clientes",values:d.su.clients,color:"#EB6A1D"},{name:"Proveedores",values:d.su.sellers,color:"#2E7D32"}]}))),
+    h("div",{className:"grid two"},
+      h(Card,{title:"Ventas por categoría"},h(Bars,{items:d.cat})),
+      h(Card,{title:"Ventas por comuna"},h(Bars,{items:d.com}))),
+    h("div",{className:"grid two"},
+      h(Card,{title:"Economía circular: usados vs nuevos"},h(Donut,{items:d.cond})),
+      h(Card,{title:"Alertas del catálogo"},d.al.map(a=>h("div",{className:"alert",key:a.text},h("span",{className:"dot",style:{background:a.tone}}),a.text)))),
+    h("div",{className:"grid two"},
+      h(Card,{title:"Productos más vendidos"},h(Table,{cols:[{k:"name",t:"Producto"},{k:"condition",t:"Condición"},{k:"units",t:"Unid.",n:1,f:nf},{k:"revenue",t:"Ingresos",n:1,f:clp}],rows:d.tp})),
+      h(Card,{title:"Proveedores con más ventas"},h(Table,{cols:[{k:"name",t:"Proveedor"},{k:"comuna",t:"Comuna"},{k:"listings",t:"Publ.",n:1},{k:"sales",t:"Ventas",n:1,f:clp}],rows:d.ts}))))}
+
+/** Tabla con acciones por fila. */
+function ActionTable({cols,rows,actions,empty}){
+  if(!rows.length)return h(Empty,{text:empty});
+  return h("div",{className:"scroll"},h("table",null,
+    h("thead",null,h("tr",null,cols.map(c=>h("th",{key:c.t,className:c.n?"n":""},c.t)),h("th",{className:"n"},"Acciones"))),
+    h("tbody",null,rows.map(r=>h("tr",{key:r.id},cols.map(c=>h("td",{key:c.t,className:c.n?"n":""},c.f(r))),h("td",null,h("div",{className:"actions"},actions(r))))))))}
+
+function ProductsView({db,session,run}){
+  const[q,setQ]=useState("");
+  const rows=db.productos.filter(p=>!q||(p.nombre+" "+p.comuna+" "+p.categoria).toLowerCase().includes(q.toLowerCase()));
+  const vendedor=p=>{const s=db.bySeller.get(p.proveedorId);return s?s.nombre:(p.proveedorId==null?"Catálogo inicial":"#"+p.proveedorId)};
+  const estado=p=>p.estado==="PAUSED"?h("span",{className:"pill off"},"Pausada"):p.stock===0?h("span",{className:"pill bad"},"Sin stock"):h("span",{className:"pill ok"},"Activa");
+  return h(Card,{title:"Publicaciones ("+db.productos.length+")"},
+    h("div",{className:"filters"},h("input",{placeholder:"Buscar por nombre, comuna o categoría",value:q,onChange:e=>setQ(e.target.value),className:"btn",style:{minWidth:260,padding:"9px 14px",fontSize:13}})),
+    h(ActionTable,{empty:"No hay publicaciones",rows,
+      cols:[{t:"Producto",f:p=>p.emoji+" "+p.nombre},{t:"Proveedor",f:vendedor},{t:"Comuna",f:p=>p.comuna},{t:"Precio",n:1,f:p=>clp(p.precio)},{t:"Stock",n:1,f:p=>nf(p.stock)},{t:"Estado",f:estado}],
+      actions:p=>[
+        h(Btn,{key:"e",disabled:!puede(session,"MODERAR_PUBLICACIONES"),onClick:()=>run(()=>acciones.estadoProducto(session,p),p.estado==="ACTIVE"?"Publicación pausada":"Publicación activada")},p.estado==="ACTIVE"?"Pausar":"Activar"),
+        h(Btn,{key:"d",kind:"danger",disabled:!puede(session,"ELIMINAR_REGISTROS"),title:puede(session,"ELIMINAR_REGISTROS")?"":"Solo Administrador",
+          onClick:()=>confirm("¿Eliminar «"+p.nombre+"»? Esta acción no se puede deshacer.")&&run(()=>acciones.eliminarProducto(session,p),"Publicación eliminada")},"Eliminar")]}))}
+
+function OrdersView({db,session,run}){
+  const cliente=o=>{const c=db.clientes.find(x=>x.id===o.clienteId);return c?c.nombre:"#"+o.clienteId};
+  const rows=[...db.pedidos].sort((a,b)=>b.creadoEn-a.creadoEn);
+  return h(Card,{title:"Pedidos ("+rows.length+")"},
+    h(ActionTable,{empty:"Aún no hay pedidos",rows,
+      cols:[{t:"#",f:o=>o.id},{t:"Cliente",f:cliente},{t:"Fecha",f:o=>fecha(o.creadoEn)},{t:"Productos",f:o=>(o.items||[]).map(i=>i.cantidad+"× "+i.nombreProducto).join(", ")},{t:"Total",n:1,f:o=>clp(o.total)},
+        {t:"Estado",f:o=>o.estado==="CANCELADO"?h("span",{className:"pill bad"},"Cancelado"):h("span",{className:"pill ok"},"Confirmado")}],
+      actions:o=>o.estado==="CANCELADO"
+        ?[h(Btn,{key:"d",kind:"danger",disabled:!puede(session,"ELIMINAR_REGISTROS"),title:puede(session,"ELIMINAR_REGISTROS")?"":"Solo Administrador",
+            onClick:()=>confirm("¿Eliminar el pedido #"+o.id+" del historial?")&&run(()=>acciones.eliminarPedido(session,o),"Pedido eliminado")},"Eliminar")]
+        :[h(Btn,{key:"c",disabled:!puede(session,"CANCELAR_PEDIDOS"),
+            onClick:()=>confirm("¿Cancelar el pedido #"+o.id+"? El stock vuelve al proveedor.")&&run(()=>acciones.cancelarPedido(session,o),"Pedido cancelado y stock repuesto")},"Cancelar")]}))}
+
+function UsersView({db,session,run}){
+  const admin=puede(session,"ELIMINAR_REGISTROS");
+  const[form,setForm]=useState({nombre:"",email:"",password:"",rol:"SOPORTE"}),[formError,setFormError]=useState(null);
+  const set=k=>e=>setForm(Object.assign({},form,{[k]:e.target.value}));
+  const crear=e=>{e.preventDefault();
+    if(form.nombre.trim().length<3){setFormError("El nombre debe tener al menos 3 caracteres");return}
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.trim())){setFormError("Correo no válido");return}
+    if(form.password.length<8){setFormError("La contraseña debe tener al menos 8 caracteres");return}
+    setFormError(null);
+    run(()=>acciones.crearEquipo(session,Object.assign({},form,{nombre:form.nombre.trim(),email:form.email.trim()})),"Cuenta creada",()=>setForm({nombre:"",email:"",password:"",rol:"SOPORTE"}),setFormError)};
+  const del=(label,fn)=>h(Btn,{kind:"danger",disabled:!admin,title:admin?"":"Solo Administrador",onClick:()=>confirm("¿Eliminar a "+label+"?")&&run(fn,"Cuenta eliminada")},"Eliminar");
+  return h("div",null,
+    h("div",{className:"grid two"},
+      h(Card,{title:"Clientes ("+db.clientes.length+")"},h(ActionTable,{empty:"Sin clientes",rows:db.clientes,
+        cols:[{t:"Nombre",f:u=>u.nombre},{t:"Correo",f:u=>u.email},{t:"Alta",f:u=>new Date(u.creadoEn).toLocaleDateString("es-CL")}],
+        actions:u=>[h("span",{key:"d"},del(u.nombre,()=>acciones.eliminarCliente(session,u)))]})),
+      h(Card,{title:"Proveedores ("+db.proveedores.length+")"},h(ActionTable,{empty:"Sin proveedores",rows:db.proveedores,
+        cols:[{t:"Nombre",f:u=>u.nombre},{t:"RUT",f:u=>u.rut},{t:"Correo",f:u=>u.email}],
+        actions:u=>[h("span",{key:"d"},del(u.nombre,()=>acciones.eliminarProveedor(session,u)))]}))),
+    h("div",{className:"grid two"},
+      h(Card,{title:"Equipo CostoStock ("+db.equipo.length+")"},h(ActionTable,{empty:"Sin cuentas",rows:db.equipo,
+        cols:[{t:"Nombre",f:u=>u.nombre},{t:"Correo",f:u=>u.email},{t:"Rol",f:u=>h("span",{className:"pill"+(u.rol==="ADMIN"?"":" off")},ROL_TXT[u.rol]||u.rol)}],
+        actions:u=>[h(Btn,{key:"d",kind:"danger",disabled:!puede(session,"GESTIONAR_EQUIPO")||u.id===session.id,title:u.id===session.id?"No puedes eliminar tu propia cuenta":"",
+          onClick:()=>confirm("¿Eliminar la cuenta de "+u.nombre+"?")&&run(()=>acciones.eliminarEquipo(session,u),"Cuenta eliminada")},"Eliminar")]})),
+      h(Card,{title:"Agregar integrante al equipo"},puede(session,"GESTIONAR_EQUIPO")
+        ?h("form",{onSubmit:crear},
+            h("label",{className:"field"},"Nombre",h("input",{value:form.nombre,onChange:set("nombre")})),
+            h("label",{className:"field"},"Correo",h("input",{type:"email",value:form.email,onChange:set("email")})),
+            h("label",{className:"field"},"Contraseña (mínimo 8)",h("input",{type:"password",value:form.password,onChange:set("password")})),
+            h("label",{className:"field"},"Rol",h("select",{value:form.rol,onChange:set("rol")},h("option",{value:"SOPORTE"},"Soporte"),h("option",{value:"ADMIN"},"Administrador"))),
+            formError&&h("div",{className:"err"},"⚠ "+formError),
+            h("button",{className:"btn pri",type:"submit"},"Crear cuenta"))
+        :h(Empty,{text:"Solo un Administrador puede crear cuentas del equipo."}))))}
+
+const TABS=[["resumen","Resumen"],["publicaciones","Publicaciones"],["pedidos","Pedidos"],["usuarios","Usuarios"]];
+
+function App(){
+  const[session,setSession]=useState(loadSession),[authError,setAuthError]=useState(null);
+  const[tab,setTab]=useState("resumen"),[toast,setToast]=useState(null);
+  const[db,setDb]=useState(null),[error,setError]=useState(null),[loading,setLoading]=useState(true),[updated,setUpdated]=useState(null);
+  const logout=useCallback((msg)=>{saveSession(null);setSession(null);setDb(null);setAuthError(typeof msg==="string"?msg:null)},[]);
+  const refresh=useCallback(()=>{if(!session)return;setLoading(true);
+    loadAll(session).then(r=>{setDb(prev=>prev&&prev.key===r.key?prev:r);setError(null);setUpdated(new Date())})
+      .catch(e=>{if(e.auth)logout(e.message);else setError(e.message==="Failed to fetch"?"No responde el backend":e.message||"No se pudo conectar")})
+      .finally(()=>setLoading(false))},[session,logout]);
+  useEffect(()=>{if(!session)return;refresh();const id=setInterval(refresh,REFRESH_MS);return()=>clearInterval(id)},[session,refresh]);
+  useEffect(()=>{if(!toast)return;const id=setTimeout(()=>setToast(null),3200);return()=>clearTimeout(id)},[toast]);
+  /** Ejecuta una acción, muestra el resultado y recarga los datos. */
+  const run=useCallback((fn,okMsg,onOk,onErr)=>fn().then(()=>{setToast("✓ "+okMsg);onOk&&onOk();refresh()})
+    .catch(e=>{if(e.auth)return logout(e.message);onErr?onErr(e.message):setToast("⚠ "+e.message)}),[refresh,logout]);
+
+  if(!session)return h(LoginView,{initialError:authError,onLogin:s=>{saveSession(s);setAuthError(null);setTab("resumen");setSession(s)}});
+
+  const status=error?h("span",{className:"badge",style:{background:"#FDE2E2",color:"var(--bad)"}},"Sin conexión")
+    :h("span",{className:"badge"},loading&&!updated?"Conectando…":"En vivo · "+(updated?updated.toLocaleTimeString("es-CL"):""));
+  const header=h("div",{className:"top"},
+      h("div",{className:"brand"},h(Mark),h("div",null,h("div",{className:"logo"},"COSTO",h("b",null,"STOCK")),h("div",{className:"slogan"},"NADA SE PIERDE, TODOS GANAMOS"))),
+      h("div",{style:{textAlign:"right"}},
+        h("div",{style:{fontWeight:700}},session.nombre," ",h("span",{className:"pill"},ROL_TXT[session.rol]||session.rol)),
+        h("div",{style:{marginTop:6,display:"flex",gap:6,justifyContent:"flex-end",alignItems:"center"}},status,
+          h(Btn,{onClick:refresh,disabled:loading},loading?"Actualizando…":"Actualizar"),
+          h(Btn,{onClick:()=>logout()},"Cerrar sesión"))));
+  const errorBox=error&&h("div",{className:"card",style:{borderColor:"var(--bad)",marginBottom:14}},
+      h("h3",{style:{color:"var(--bad)"}},"No se pudo leer los microservicios"),
+      h("div",{className:"sub"},error+". Levanta el backend (backend/iniciar-microservicios) y presiona Actualizar. "+
+        (db?"Se muestran los últimos datos recibidos.":"")+" Si los microservicios corren en otro PC, abre este archivo agregando ?host=IP_DEL_PC a la URL."));
+  const tabs=h("div",{className:"tabs"},TABS.map(([k,l])=>h("button",{key:k,className:k===tab?"on":"",onClick:()=>setTab(k)},l)));
+  const props={db,session,run};
+  const content=!db?h("div",{className:"card"},h(Empty,{text:"Conectando con los microservicios…"}))
+    :tab==="resumen"?h(Dashboard,{db}):tab==="publicaciones"?h(ProductsView,props):tab==="pedidos"?h(OrdersView,props):h(UsersView,props);
+  return h("div",{className:"wrap"},header,h("div",{className:"roleinfo"},"Rol "+(ROL_TXT[session.rol]||session.rol)+": "+(ROL_INFO[session.rol]||"")),errorBox,tabs,content,
+    h("div",{className:"note"},"Datos en vivo desde ms-usuarios (8081), ms-productos (8082) y ms-pedidos (8083). Se actualiza cada "+REFRESH_MS/1000+" s. Ventas = pedidos confirmados. Los permisos se validan en el backend con el token de la sesión."),
+    toast&&h("div",{className:"toast"},toast))}
+const st=document.createElement("style");st.textContent="@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}";document.head.appendChild(st);
+ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+</script>
+</body>
+</html>
