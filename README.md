@@ -1,104 +1,152 @@
-# CostoStock
+<div align="center">
 
-Plataforma móvil Android para **comprar y vender insumos con control de costos y stock**. Está formada por dos aplicaciones que comparten identidad visual, arquitectura y reglas de negocio:
+# 🛒 CostoStock
 
-| Aplicación | Para quién | Carpeta | Paquete |
-|---|---|---|---|
-| **CostoStock** (Clientes) | Quien compra | `CostoStock/` | `cl.costoStock.myapplication` |
-| **CostoStock Proveedores** | Quien vende | `CostoStockProveedor/CostoStockProveedor/` | `cl.costoStock.proveedor` |
+**Compra y venta de insumos con control de costos y stock**
 
-> Evaluación Parcial 2 · DSY1105 Desarrollo de Aplicaciones Móviles · Duoc UC
+*Nada se pierde, todos ganamos*
 
-## Integrantes
+![Kotlin](https://img.shields.io/badge/Kotlin-Jetpack%20Compose-7F52FF?logo=kotlin&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3-6DB33F?logo=springboot&logoColor=white)
+![Android](https://img.shields.io/badge/Android-APK%20firmado-3DDC84?logo=android&logoColor=white)
+![Tests](https://img.shields.io/badge/Pruebas-JUnit%20%2B%20MockK-EB6A1D)
 
-- Nicolas Rojas
-- Benjamin Perez
+Evaluación Final Transversal · DSY1105 Desarrollo de Aplicaciones Móviles · Duoc UC · **Equipo N° 4**
 
-**Equipo N° 4**
+</div>
 
-## ¿Cómo funciona?
+---
 
-El **proveedor** publica artículos con fotos, precio, unidades y comuna. El **cliente** explora el catálogo, arma su carrito y confirma la compra. Todos los precios incluyen IVA (19%) y el carrito muestra el desglose Neto / IVA / Total. Al confirmar una compra, el stock se descuenta.
+> 📁 **La versión final del proyecto está en la carpeta [`CostoStockFinal/`](CostoStockFinal/).**
+> Las demás carpetas del repositorio corresponden a entregas anteriores.
 
-## Funcionalidades
+## 📱 ¿Qué es CostoStock?
 
-### App de Clientes
+CostoStock conecta a **personas que venden** insumos (nuevos o usados) con **personas que compran**, mostrando siempre el precio con IVA, el stock real y la comuna de cada producto.
 
-- **Registro** con validación por campo (nombre, correo, contraseña, confirmación y términos), medidor de seguridad de la contraseña y detección de correo duplicado.
-- **Inicio de sesión** con mensajes de error visuales y **sesión persistente**: al reabrir la app se entra directo al catálogo.
-- **Catálogo** con encabezado de marca, buscador, carrusel de destacados, accesos rápidos por categoría, filtros por categoría y comuna, filtro de poco stock, orden por precio y ficha de detalle del producto.
-- **Carrito** con cantidades limitadas por el stock, eliminación de líneas, vaciado con confirmación, desglose Neto / IVA 19% incluido / Total y **confirmación de compra transaccional** (descuenta stock y vacía el carrito en una sola operación).
-- **Perfil** con foto tomada con la cámara y cierre de sesión.
+El proyecto está formado por:
 
-### App de Proveedores
-
-- **Registro** con nombre del comercio, RUT (con dígito verificador), celular chileno, correo, contraseña con medidor de seguridad y términos.
-- **Inicio de sesión** con sesión persistente y cierre de sesión.
-- **Mis publicaciones** con resumen (activas, pausadas, unidades y valor del inventario), búsqueda, filtros por estado (todas, activas, pausadas, sin stock) y acciones para editar, pausar o activar y eliminar.
-- **Asistente de publicación en 4 pasos**, con validación en cada uno:
-  1. *Producto*: título, categoría, condición (nuevo o usado) y descripción.
-  2. *Fotos*: de 1 a 3 con la cámara; la primera es la portada.
-  3. *Precio*: precio con IVA incluido (con desglose), unidades y comuna.
-  4. *Revisar*: vista previa antes de publicar.
-- **Perfil** con foto, datos de contacto y edición de datos.
-
-## Recursos nativos
-
-| Recurso | Uso | Detalle |
+| Parte | Para quién | Carpeta |
 |---|---|---|
-| **Cámara** | Foto de perfil (ambas apps) y fotos de productos (Proveedores) | Permiso `CAMERA` solicitado en tiempo de ejecución, con manejo de rechazo y de dispositivos sin cámara. Las fotos se guardan en el almacenamiento interno privado. |
-| **Vibración** | Retroalimentación háptica | Al agregar productos, ante errores de formulario y al confirmar una compra. |
+| 🛍️ **App CostoStock** | Clientes que compran | [`CostoStockFinal/CostoStock`](CostoStockFinal/CostoStock) |
+| 🏪 **App CostoStock Proveedores** | Vendedores que publican | [`CostoStockFinal/CostoStockProveedor/CostoStockProveedor`](CostoStockFinal/CostoStockProveedor/CostoStockProveedor) |
+| ⚙️ **3 microservicios** (usuarios, productos, pedidos) | Backend propio con base de datos | [`CostoStockFinal/backend`](CostoStockFinal/backend) |
+| 🖥️ **Panel de administración web** | Equipo de Soporte y Administración | [`CostoStockFinal/CostoStock · Panel de administración.html`](CostoStockFinal/) |
 
-## Animaciones
+## 👥 Integrantes
 
-Transiciones entre pantallas, cambio animado de botón y cantidad, total animado del carrito, sacudida del formulario ante errores, barra de seguridad de contraseña, estado vacío, diálogo de éxito y, en Proveedores, progreso del asistente y contadores del resumen.
+| Integrante | Responsabilidad principal |
+|---|---|
+| **Nicolas Rojas** | App de Proveedores · microservicios de usuarios y productos |
+| **Benjamin Perez** | App de Clientes · microservicio de pedidos · API externa |
 
-## Arquitectura (MVVM)
+### Trabajo colaborativo
+- Historial de commits: [ver commits](../../commits/main)
+- Aportes por integrante: [ver contribuidores](../../graphs/contributors)
 
-Ambas apps siguen la misma estructura de carpetas:
+## ✨ Funcionalidades
 
-```
-data/
-├── local        # SQLiteOpenHelper + DAOs
-├── model        # Modelos de datos
-├── repository   # Repositorios (acceso a datos desde los ViewModel)
-├── session      # SessionManager (sesión activa)
-└── storage      # PhotoStorage (fotos en almacenamiento privado)
-domain/
-├── validation   # Validators (reglas de formularios, Kotlin puro)
-└── cart | pricing | catalog   # Cálculo de IVA y listas cerradas
-security/        # PasswordHasher (PBKDF2-SHA256 + sal)
-nativeapi/       # Haptics y, en Proveedores, CameraAction
-ui/
-├── auth · home · cart · profile · products · publish   # Screen + ViewModel por módulo
-├── components   # Campos, banners y elementos reutilizables
-├── navigation   # Rutas
-└── theme        # Tema Material 3 (claro y oscuro)
-```
+### 🔐 Cuentas y seguridad
+- Registro, inicio de sesión y **edición de perfil** en ambas apps.
+- **Recuperación de contraseña** con un código de 6 dígitos que vence en 10 minutos.
+- Contraseñas guardadas de forma segura (cifradas) en el servidor.
+- Cada sesión usa un **token** que el servidor revisa antes de permitir una acción.
 
-- Las **validaciones viven en `Validators`**, sin dependencias de Android ni de la interfaz. Los `ViewModel` exponen el estado con `StateFlow` y las pantallas solo lo dibujan.
-- La **persistencia es SQLite**. Los repositorios ejecutan las consultas fuera del hilo principal y los `Flow` se vuelven a emitir cuando cambia la base, para que la interfaz se mantenga sincronizada.
-- Las **contraseñas nunca se guardan en texto plano**: se almacena un hash PBKDF2-HMAC-SHA256 (210.000 iteraciones) con sal aleatoria por usuario. El login limita los intentos fallidos seguidos (5 errores → espera de 30 s).
-- La **inyección de dependencias es manual** (contenedor en la clase `Application` y `AppViewModelProvider`).
+### 👤 4 roles de usuario
 
-## Tecnologías
+| Rol | Dónde trabaja | Qué puede hacer |
+|---|---|---|
+| **Cliente** | App CostoStock | Comprar, ver y cancelar sus pedidos, editar o eliminar su cuenta |
+| **Proveedor** | App Proveedores | Publicar, editar, pausar y eliminar sus productos |
+| **Soporte** | Panel web | Ver todo, pausar o activar publicaciones y cancelar pedidos (no puede eliminar) |
+| **Administrador** | Panel web | Todo lo de Soporte, además de eliminar registros y crear cuentas del equipo |
 
-Kotlin · Jetpack Compose · Material 3 · Navigation Compose · ViewModel y StateFlow · SQLite
+### 🛍️ App de Clientes
+- Catálogo que **se actualiza solo** con buscador, filtros por categoría y comuna, y orden por precio.
+- Botón **"Usar mi ubicación"** que muestra los productos de la comuna más cercana.
+- Carrito con desglose de **Neto, IVA y Total**, limitado al stock disponible.
+- Confirmación de compra e historial en **"Mis pedidos"**, con opción de cancelar.
+- Precios convertidos a **dólares y UF** con los indicadores del día.
 
-## Requisitos
+### 🏪 App de Proveedores
+- Resumen del inventario: publicaciones activas, pausadas y valor total (también en US$ y UF).
+- **Asistente de publicación en 4 pasos**: producto, fotos, precio y revisión.
+- Fotos con la **cámara** y comuna detectada con el **GPS**.
+- El stock baja automáticamente cuando un cliente compra.
 
-- Android Studio con JDK 17 o superior y Android **API 26+** (Android 8.0) en emulador o teléfono.
-- Cada app es un proyecto Gradle independiente: abre `CostoStock/` o `CostoStockProveedor/CostoStockProveedor/` por separado.
-- Tests: `./gradlew test` dentro de cada proyecto.
+### 🖥️ Panel de administración
+- Inicio de sesión para Soporte y Administrador.
+- Resumen en vivo: ventas, pedidos, gráficos por día, categoría y comuna, y alertas de stock.
+- Gestión de publicaciones, pedidos y usuarios según el rol.
 
-## Documentación
+### 📲 Recursos del teléfono
+| Recurso | Uso |
+|---|---|
+| 📷 **Cámara** | Foto de perfil y fotos de productos |
+| 📍 **Ubicación (GPS)** | Detectar la comuna del usuario o del producto |
+| 📳 **Vibración** | Aviso al haber errores en formularios o al completar una acción |
 
-- [`docs/panel-administracion.html`](docs/panel-administracion.html): maqueta estática del panel de administración (datos de ejemplo, no está conectada a las apps).
-- [`CostoStockProveedor/CostoStockProveedor/docs/contrato-datos.md`](CostoStockProveedor/CostoStockProveedor/docs/contrato-datos.md): tabla `products` compartida y cómo se conectarán las dos apps.
+Todos piden permiso al usuario cuando corresponde. La ubicación no se guarda ni se envía al servidor.
 
-## Limitaciones conocidas y próximos pasos
+### 💾 Dónde se guardan los datos
+| Lugar | Qué guarda | Por qué |
+|---|---|---|
+| **Teléfono** (SQLite y preferencias) | Carrito, sesión y foto de perfil | Son datos personales del dispositivo |
+| **Microservicios** (base de datos) | Usuarios, productos, stock y pedidos | Son datos compartidos entre todos los usuarios |
 
-- **Las dos apps aún no están conectadas.** Cada una usa su propia base SQLite dentro de su espacio privado de Android, y dos aplicaciones no pueden compartir ese archivo. Para conectarlas hace falta un backend (por ejemplo API REST o Firebase); ver el contrato de datos.
-- La app de cliente todavía no migra su tabla `products` (agregar `seller_id`, `status`, `image_paths`…) ni filtra por publicaciones activas con stock.
-- El paquete de la app de cliente conserva el nombre de plantilla `myapplication`.
-- Parte del código está duplicado entre las dos apps (`Validators`, `PasswordHasher`, tema, `Haptics`); a futuro podría ir en un módulo compartido.
+## 🔗 Endpoints
+
+### Microservicios propios
+| Servicio | Dirección | Principales endpoints |
+|---|---|---|
+| **ms-usuarios** | `http://localhost:8081` | `/api/clientes` · `/api/proveedores` · `/api/equipo` · `/api/recuperacion` |
+| **ms-productos** | `http://localhost:8082` | `/api/productos` (catálogo, publicar, editar, pausar, eliminar) |
+| **ms-pedidos** | `http://localhost:8083` | `/api/pedidos` (comprar, historial, cancelar, eliminar) |
+
+Cada servicio tiene documentación interactiva en `/swagger-ui.html`. La lista completa con los permisos de cada endpoint está en el [README del proyecto](CostoStockFinal/README.md#4-endpoints-utilizados). También hay una colección de Postman en [`CostoStockFinal/backend`](CostoStockFinal/backend).
+
+### API externa
+| API | Uso |
+|---|---|
+| [mindicador.cl](https://mindicador.cl/api) | Dólar, UF y euro del día para mostrar precios equivalentes |
+
+## 🚀 Cómo ejecutarlo
+
+**Requisitos:** Android Studio con un emulador. Para el backend no hay que instalar nada más (en Windows el script descarga Maven solo).
+
+1. **Encender el backend:** abrir `CostoStockFinal/backend` y hacer doble clic en `iniciar-microservicios.bat`. Esperar a que las 3 ventanas digan `Started`.
+2. **Abrir las apps:** en Android Studio, abrir `CostoStockFinal/CostoStock` (clientes) y `CostoStockFinal/CostoStockProveedor/CostoStockProveedor` (proveedores), y presionar ▶.
+3. **Abrir el panel:** doble clic en `CostoStock · Panel de administración.html`.
+
+**Cuentas del panel:**
+| Rol | Correo | Contraseña |
+|---|---|---|
+| Administrador | `admin@costostock.cl` | `Admin1234` |
+| Soporte | `soporte@costostock.cl` | `Soporte1234` |
+
+💡 Para recuperar una contraseña, el código de 6 dígitos aparece en la ventana de **ms-usuarios** (simula el correo).
+💡 En el emulador se puede fijar una ubicación en *Extended controls → Location* (por ejemplo `-33.4378, -70.6504`).
+
+El paso a paso completo, incluido el uso con teléfono físico, está en el [README del proyecto](CostoStockFinal/README.md#5-pasos-para-ejecutar).
+
+## 📦 APK firmado y llaves
+
+| Archivo | Ubicación |
+|---|---|
+| APK App Clientes | [`CostoStockFinal/entregables/CostoStock-Clientes-release.apk`](CostoStockFinal/entregables) |
+| APK App Proveedores | [`CostoStockFinal/entregables/CostoStock-Proveedores-release.apk`](CostoStockFinal/entregables) |
+| Llave Clientes (.jks) | `CostoStockFinal/CostoStock/keystore/costostock-clientes.jks` |
+| Llave Proveedores (.jks) | `CostoStockFinal/CostoStockProveedor/CostoStockProveedor/keystore/costostock-proveedores.jks` |
+| Configuración de firma | `keystore.properties` y `app/build.gradle.kts` de cada app |
+
+## 🧪 Pruebas
+- **Apps:** pruebas unitarias de ViewModels y repositorios con JUnit y MockK, más el reporte de cobertura con JaCoCo.
+- **Microservicios:** pruebas de servicios y pruebas de integración de cada API.
+
+## 🛠️ Tecnologías
+Kotlin · Jetpack Compose · Material 3 · Retrofit · SQLite · Java 17 · Spring Boot · Spring Data JPA · H2 / MySQL · JUnit · MockK · JaCoCo
+
+## 📚 Más información
+- [README completo del proyecto](CostoStockFinal/README.md)
+- [Guía de la defensa](CostoStockFinal/docs/defensa.md)
+- [Checklist de la evaluación](CostoStockFinal/docs/EFT-checklist.md)
