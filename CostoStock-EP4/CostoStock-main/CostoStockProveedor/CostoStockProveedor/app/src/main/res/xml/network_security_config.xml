@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Los microservicios corren en el PC del equipo con HTTP (sin certificado), por eso se permite
+  tráfico sin cifrar. La API externa (mindicador.cl) se consume por HTTPS.
+  En producción los microservicios deberían publicarse con HTTPS y eliminar este permiso.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

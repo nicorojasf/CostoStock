@@ -1,0 +1,11 @@
+.gradle/
+build/
+.idea/
+.kotlin/
+local.properties
+*.iml
+
+# Backend (Spring Boot)
+target/
+backend/*/data/
+*.log
