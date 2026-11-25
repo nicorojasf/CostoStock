@@ -1,0 +1,416 @@
+{
+  "info": {
+    "name": "CostoStock - Microservicios",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Endpoints de ms-usuarios (8081), ms-productos (8082) y ms-pedidos (8083), más la API externa mindicador.cl"
+  },
+  "variable": [
+    {
+      "key": "usuarios",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "productos",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "pedidos",
+      "value": "http://localhost:8083"
+    }
+  ],
+  "item": [
+    {
+      "name": "ms-usuarios",
+      "item": [
+        {
+          "name": "Registrar cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes/registro",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Benjamín Pérez\",\n  \"email\": \"benja@mail.cl\",\n  \"password\": \"Clave1234\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"benja@mail.cl\",\n  \"password\": \"Clave1234\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes"
+          }
+        },
+        {
+          "name": "Obtener cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes/1"
+          }
+        },
+        {
+          "name": "Editar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Benja Pérez\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar cliente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/clientes/1"
+          }
+        },
+        {
+          "name": "Registrar proveedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/proveedores/registro",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Tienda Nico\",\n  \"rut\": \"12345678-5\",\n  \"email\": \"nico@mail.cl\",\n  \"telefono\": \"+56912345678\",\n  \"password\": \"Clave1234\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login proveedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/proveedores/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nico@mail.cl\",\n  \"password\": \"Clave1234\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar proveedores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/proveedores"
+          }
+        },
+        {
+          "name": "Editar proveedor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{usuarios}}/api/proveedores/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Tienda Nico Spa\",\n  \"telefono\": \"+56987654321\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ms-productos",
+      "item": [
+        {
+          "name": "Catálogo (solo disponibles)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos?soloDisponibles=true"
+          }
+        },
+        {
+          "name": "Publicaciones de un proveedor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos?proveedorId=1"
+          }
+        },
+        {
+          "name": "Obtener producto",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos/1"
+          }
+        },
+        {
+          "name": "Crear producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proveedorId\": 1,\n  \"nombre\": \"Lámpara de escritorio LED\",\n  \"categoria\": \"Hogar\",\n  \"descripcion\": \"3 niveles de luz, brazo flexible\",\n  \"precio\": 12990,\n  \"stock\": 5,\n  \"comuna\": \"Maipú\",\n  \"condicion\": \"NEW\",\n  \"imagenes\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Editar producto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos/15",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proveedorId\": 1,\n  \"nombre\": \"Lámpara LED Pro\",\n  \"categoria\": \"Hogar\",\n  \"descripcion\": \"3 niveles de luz, brazo flexible\",\n  \"precio\": 14990,\n  \"stock\": 5,\n  \"comuna\": \"Maipú\",\n  \"condicion\": \"NEW\",\n  \"imagenes\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Pausar producto",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos/15/estado",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"PAUSED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar producto",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos/15"
+          }
+        },
+        {
+          "name": "Descontar stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos/stock/descontar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"productoId\": 1,\n      \"cantidad\": 1\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Reponer stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{productos}}/api/productos/stock/reponer",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"productoId\": 1,\n      \"cantidad\": 1\n    }\n  ]\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ms-pedidos",
+      "item": [
+        {
+          "name": "Crear pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedidos}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": 1,\n  \"items\": [\n    {\n      \"productoId\": 1,\n      \"cantidad\": 2\n    },\n    {\n      \"productoId\": 4,\n      \"cantidad\": 1\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Pedidos de un cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedidos}}/api/pedidos?clienteId=1"
+          }
+        },
+        {
+          "name": "Obtener pedido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedidos}}/api/pedidos/1"
+          }
+        },
+        {
+          "name": "Cancelar pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedidos}}/api/pedidos/1/cancelar"
+          }
+        },
+        {
+          "name": "Eliminar pedido cancelado",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{pedidos}}/api/pedidos/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API externa",
+      "item": [
+        {
+          "name": "Indicadores mindicador.cl",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "https://mindicador.cl/api"
+          }
+        }
+      ]
+    }
+  ]
+}

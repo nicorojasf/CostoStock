@@ -1,0 +1,15 @@
+# MySQL para los microservicios (perfil "mysql").
+# Uso: docker compose -f backend/docker-compose.yml up -d
+# Luego: mvn spring-boot:run -Dspring-boot.run.profiles=mysql  (en cada microservicio)
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: costostock-mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3306:3306"
+    volumes:
+      - costostock-mysql:/var/lib/mysql
+volumes:
+  costostock-mysql:
